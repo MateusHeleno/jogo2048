@@ -24,10 +24,11 @@
 
 void limpar_buffer(); // limpa o buffer
 void retiraN(char nome[]); // retira o \n do fgets
-void maiuscula(char nome[]);
+void maiuscula(char nome[]); // tranforma tudo da string em maisucula
 void menuInicial(char *escolha);
 void jogo();
 void mapa();
 void ajuda();
+void sair(char *escolha);
 
 #endif // JOGO2048_H

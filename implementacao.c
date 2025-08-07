@@ -1,14 +1,15 @@
 #include "jogo2048.h"
 void jogo(){
     char escolha;
+    
     menuInicial(&escolha);
     int repetirMenu = 0;
 
     do{
         switch(escolha){
         case 'R': case 'r': 
-            printf("%c\n",escolha);
-            repetirMenu = 0;
+            sair(&escolha);
+            repetirMenu = 1; //  tenho que colocar esse repetir menu = 0, pra dps da primeira iteração quando ele voltar aqui parar de repetir
             break;
         case 'N': case 'n':
             printf("%c\n",escolha);
@@ -28,7 +29,7 @@ void jogo(){
             break;
         case 'M': case 'm':
             printf("%c\n",escolha);
-            repetirMenu = 0;
+            repetirMenu = 0; //
             mapa();
             break;
         case 'A': case 'a':
@@ -137,34 +138,41 @@ void ajuda() {
     printf("- Para vencer, o jogador deve formar uma peça com o número 2048.\n");
     printf("- O jogador perde se não houver mais movimentos válidos possíveis.\n\n");
 
-    char saida[3],segundaSaida[3]; // Esperado a resposta OK
+    char saida[3]; // Esperado a resposta OK
     int cont = 1;
     do{
-        if(cont > 1){ 
+        if(cont > 1)
             printf("Apenas a palavra OK sai do código, se quiser realmente sair digite novamente: ");
-            fgets(segundaSaida,3,stdin);
-            strcpy(saida,segundaSaida);
-        }
-        else{ 
+        else
             printf("Digite OK para voltar ao menu : ");
-            fgets(saida,3,stdin);
-        }
+            
+        fgets(saida,3,stdin);
         retiraN(saida);//Retira o \n e limpar o buffer
         cont++;
         maiuscula(saida);
-        
+
     }while(strcmp(saida,"OK"));
 
   
 
 }
 
-void sair(){
-    char decisao[5];
-    printf("Você deseja sair :");
-    fgets(decisao,5,stdin);
-    retiraN(decisao); //Retira o \n e limpar o buffer
-    //strcmp(
-        //comparar a string a palavra nao se for igual retorna 0, se for diferente retorna sim
+void sair(char *escolha){
+    char decisao[12];
+    int cont = 1;
+    do{
+        if(cont > 1)
+            printf("Digite apenas \"Continuar\" ou \"Sair\" para fazer sua escolha: ");// a barra invertida \ antes das aspas é para digitar ela no terminal
+        else
+            printf("\nVocê deseja sair do jogo ?Responda com \"Continuar\" para ficar e \"Sair\" para fechar o jogo: ");
     
+        fgets(decisao,12,stdin);
+        retiraN(decisao); //Retira o \n e limpar o buffer
+        maiuscula(decisao);
+        cont++;
+    }while(strcmp(decisao, "CONTINUAR") != 0 && strcmp(decisao, "SAIR") != 0); // strcmp retorna 0 se forem iguais
+    if(!strcmp(decisao, "SAIR"))
+        exit(0);
+    else 
+        menuInicial(escolha);    
 }
