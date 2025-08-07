@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include <unistd.h>
+#include <ctype.h>
 
 #define TAB_HOR "\u2501" // ━ (horizontal)
 #define TAB_VER "\u2503" // ┃ (vertical)
@@ -24,6 +24,7 @@
 
 void limpar_buffer(); // limpa o buffer
 void retiraN(char nome[]); // retira o \n do fgets
+void maiuscula(char nome[]);
 void menuInicial(char *escolha);
 void jogo();
 void mapa();

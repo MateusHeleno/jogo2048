@@ -33,7 +33,7 @@ void jogo(){
             break;
         case 'A': case 'a':
             ajuda();
-            sleep(4); // pausa o programa por 4 segundos , pra dar tempo de dar uma olhada na ajuda e dps voltar a imprimir o menu, ela é da biblioteca unistd.h
+
             menuInicial(&escolha);
             repetirMenu = 1;
             break;
@@ -60,6 +60,15 @@ void retiraN(char nome[])
     int tam = strlen(nome);
     if (nome[tam - 1] == '\n') // remove o \n do fgets
         nome[tam - 1] = '\0'; 
+    else 
+        limpar_buffer();
+}
+
+void maiuscula(char nome[]){
+    int tam = strlen(nome);
+    for (int i =0; i < tam;i++){
+        nome[i] = toupper(nome[i]);
+    }
 }
 
 void menuInicial(char *escolha){
@@ -73,7 +82,7 @@ void menuInicial(char *escolha){
 }
 
 void mapa(){
-    int n = 4;
+    int n = 6;
     // linha de cima    
     printf("%s",TAB_TL); // Ponta esquerda
     for(int i = 1;i<n;i++){ // começa do um porque a ponta eu ja coloquei
@@ -126,5 +135,36 @@ void ajuda() {
     printf("- Um movimento é considerado válido quando pelo menos uma peça pode ser movida, seja por deslocamento ou por combinação.\n");
     printf("- Ao final de cada jogada, uma nova peça é gerada aleatoriamente em uma posição vazia do tabuleiro (se houver).\n");
     printf("- Para vencer, o jogador deve formar uma peça com o número 2048.\n");
-    printf("- O jogador perde se não houver mais movimentos válidos possíveis.\n");
+    printf("- O jogador perde se não houver mais movimentos válidos possíveis.\n\n");
+
+    char saida[3],segundaSaida[3]; // Esperado a resposta OK
+    int cont = 1;
+    do{
+        if(cont > 1){ 
+            printf("Apenas a palavra OK sai do código, se quiser realmente sair digite novamente: ");
+            fgets(segundaSaida,3,stdin);
+            strcpy(saida,segundaSaida);
+        }
+        else{ 
+            printf("Digite OK para voltar ao menu : ");
+            fgets(saida,3,stdin);
+        }
+        retiraN(saida);//Retira o \n e limpar o buffer
+        cont++;
+        maiuscula(saida);
+        
+    }while(strcmp(saida,"OK"));
+
+  
+
+}
+
+void sair(){
+    char decisao[5];
+    printf("Você deseja sair :");
+    fgets(decisao,5,stdin);
+    retiraN(decisao); //Retira o \n e limpar o buffer
+    //strcmp(
+        //comparar a string a palavra nao se for igual retorna 0, se for diferente retorna sim
+    
 }
