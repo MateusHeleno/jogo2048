@@ -29,6 +29,7 @@ void jogo(){
         case 'A': case 'a':
             printf("%c\n",escolha);
             repetirMenu = 0;
+            mapa();
             break;
         case 'M': case 'm':
             printf("%c\n",escolha);
@@ -41,6 +42,9 @@ void jogo(){
             break;
         }
     }while(repetirMenu);
+
+    mapa();
+  
 }
 
 void limpar_buffer()
@@ -64,4 +68,45 @@ void menuInicial(char *escolha){
     printf("\nEscolha: ");
     scanf("%c",escolha);//escolha ja é um endereço de memória
     limpar_buffer();
+}
+
+void mapa(){
+
+    int n;
+    scanf("%d",&n);
+    // linha de cima    
+    printf("%s",TAB_TL); // Ponta esquerda
+    for(int i = 1;i<n;i++){
+        printf("%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_TJ); // Meio
+    }
+    printf("%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_TR); // Ponta direita
+
+    for(int i = 0; i < n;i++){
+        printf("%s",TAB_VER);
+        for(int j = 0; j < n; j++){
+            printf(" %d %s",5,TAB_VER);
+            }
+
+        
+        if (i<n-1){  // Controla a impressao só pra imprimir as linhas do meio
+            printf("\n%s",TAB_ML);  // primeira parede
+            for (int j = 0; j <n;j++){ 
+                if (j < n-1) {  
+                    printf("%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_MJ); // paredes do meio ao final
+                }
+                else if ( j  == n-1)
+                   printf("%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_MR);
+            }
+            
+        }
+    }
+    
+
+    // linha de cima    
+    printf("\n%s",TAB_BL); // Ponta esquerda
+    for(int i = 1;i<n;i++){
+        printf("%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_BJ); // Meio
+    }
+    printf("%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_BR); // Ponta direita
+
 }
