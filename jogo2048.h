@@ -27,8 +27,9 @@ void retiraN(char nome[]); // retira o \n do fgets
 void maiuscula(char nome[]); // tranforma tudo da string em maisucula
 void menuInicial(char *escolha);
 void jogo();
-void mapa();
+void mapa(int n);
 void ajuda();
 void sair(char *escolha);
+void tamanhoJogo(int *n);
 
 #endif // JOGO2048_H

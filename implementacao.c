@@ -1,9 +1,9 @@
 #include "jogo2048.h"
 void jogo(){
+    int n;
     char escolha;
-    
-    menuInicial(&escolha);
     int repetirMenu = 0;
+    menuInicial(&escolha);
 
     do{
         switch(escolha){
@@ -12,7 +12,9 @@ void jogo(){
             repetirMenu = 1; //  tenho que colocar esse repetir menu = 0, pra dps da primeira iteração quando ele voltar aqui parar de repetir
             break;
         case 'N': case 'n':
-            printf("%c\n",escolha);
+            tamanhoJogo(&n);
+            mapa(n);
+            printf("%d",n);
             repetirMenu = 0;
             break;
         case 'J': case 'j':
@@ -30,11 +32,10 @@ void jogo(){
         case 'M': case 'm':
             printf("%c\n",escolha);
             repetirMenu = 0; //
-            mapa();
+
             break;
         case 'A': case 'a':
             ajuda();
-
             menuInicial(&escolha);
             repetirMenu = 1;
             break;
@@ -46,8 +47,6 @@ void jogo(){
         }
     }while(repetirMenu);
 
-    mapa();
-  
 }
 
 void limpar_buffer()
@@ -82,8 +81,7 @@ void menuInicial(char *escolha){
     limpar_buffer();
 }
 
-void mapa(){
-    int n = 6;
+void mapa(int n){
     // linha de cima    
     printf("%s",TAB_TL); // Ponta esquerda
     for(int i = 1;i<n;i++){ // começa do um porque a ponta eu ja coloquei
@@ -148,13 +146,9 @@ void ajuda() {
             
         fgets(saida,3,stdin);
         retiraN(saida);//Retira o \n e limpar o buffer
-        cont++;
         maiuscula(saida);
-
+        cont++;
     }while(strcmp(saida,"OK"));
-
-  
-
 }
 
 void sair(char *escolha){
@@ -175,4 +169,17 @@ void sair(char *escolha){
         exit(0);
     else 
         menuInicial(escolha);    
+}
+
+void tamanhoJogo(int *n){
+    int cont = 1;
+    do{
+        if (cont > 1)
+            printf("\nOpção inválida, por favor escolha novamente");
+        printf("\n– (4) jogo padrão 4 x 4\n– (5) Jogo 5 x 5.\n– (6) Jogo 6 x 6.\nEscolha: ");
+        scanf("%d",n);
+        cont++;
+    }while( *n < 4 || *n > 6);
+
+
 }
