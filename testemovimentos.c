@@ -20,8 +20,8 @@ int main(){
     mapa(n,mat);
     moveD(n,mat);
     mapa(n,mat);
-    /*moveC(n,mat);
-    mapa(n,mat);*/
+    moveC(n,mat);
+    mapa(n,mat);
 
     moveB(n,mat);
     mapa(n,mat);

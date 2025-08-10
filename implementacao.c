@@ -324,10 +324,10 @@ void moveD(int n, int mat[4][4]){
 
 // para os moviemntos de cima e baixo vou fixar o valor do j e mexer apenas no i lendo a matriz da maneira inversa coluna po coluna, le uma coluna inteira e so dps pula pra próxima
 
-void moveB(int n, int mat[4][4]){ 
-    //andar para esquerda
-    for (int j = 0; j < n; j++) {
-        int k = 0; // vai indicar minhas casas
+void moveC(int n, int mat[4][4]){ 
+    //andar para cima
+    for (int j = 0; j < n; j++) { // invertando a ordem do i e j para ler a matriz de coluna por coluna
+        int k = 0; // vai indicar minhas casas 
     
         for (int i = 0; i < n; i++) {
             if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
@@ -368,6 +368,54 @@ void moveB(int n, int mat[4][4]){
             k++;
         }
     }    
+}
+
+void moveB(int n, int mat[4][4]){ 
+    //andar para direita
+    for (int j = 0; j < n; j++) {
+        int k = n-1; // vai indicar minhas casas
+    
+        for (int i = n-1; i >= 0; i--) {
+            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                mat[k][j] = mat[i][j];  
+                k--;
+            }
+        }
+    // colocar 0 onde vai ta vazia, para ficar vago
+        while (k >= 0) {
+            mat[k][j] = 0;
+            k--;
+        }
+    }  
+    
+    for (int j = 0; j < n; j++) {
+        for (int i = n-1; i > 0; i--) {
+    
+            if (mat[i][j] != 0 && mat[i][j] == mat[i-1][j]) {
+                    mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
+                    mat[i-1][j] = 0;     // Zera o segundo bloco
+
+            }
+        }
+    }
+
+    //andar para direita
+    for (int j = 0; j < n; j++) {
+        int k = n-1; // vai indicar minhas casas
+    
+        for (int i = n-1; i >= 0; i--) {
+            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                mat[k][j] = mat[i][j];  
+                k--;
+            }
+        }
+    // colocar 0 onde vai ta vazia, para ficar vago
+        while (k >= 0) {
+            mat[k][j] = 0;
+            k--;
+        }
+    } 
+
 }
 
 
