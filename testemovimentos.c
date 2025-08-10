@@ -10,18 +10,19 @@ int main(){
         }
     }
 
-    mat[0][0] = 8;mat[0][1] = 4;mat[0][2] = 2;mat[0][3] = 2;
+    mat[3][3] = 8;mat[0][1] = 4;mat[0][2] = 2;mat[0][3] = 2;
     mat[1][1] = 4; 
-    mat[2][2] = 8;
-    mat[3][3] = 16; 
+    mat[2][2] = 4;
+    mat[0][0] = 16; 
     //andar para esquerda
     mapa(n,mat);
     moveE(n,mat);
     mapa(n,mat);
     moveD(n,mat);
     mapa(n,mat);
-    moveC(n,mat);
-    mapa(n,mat);
-    /*moveB(n,mat;)
+    /*moveC(n,mat);
     mapa(n,mat);*/
+
+    moveB(n,mat);
+    mapa(n,mat);
 }

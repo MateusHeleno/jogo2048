@@ -324,12 +324,12 @@ void moveD(int n, int mat[4][4]){
 
 // para os moviemntos de cima e baixo vou fixar o valor do j e mexer apenas no i lendo a matriz da maneira inversa coluna po coluna, le uma coluna inteira e so dps pula pra próxima
 
-void moveC(int n, int mat[4][4]){ 
+void moveB(int n, int mat[4][4]){ 
     //andar para esquerda
-    for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
         int k = 0; // vai indicar minhas casas
     
-        for (int j = 0; j < n; j++) {
+        for (int i = 0; i < n; i++) {
             if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
                 mat[k][j] = mat[i][j];  
                 k++;
@@ -337,15 +337,15 @@ void moveC(int n, int mat[4][4]){
         }
     // colocar 0 onde vai ta vazia, para ficar vago
         while (k < n) {
-            mat[i][k] = 0;
+            mat[k][j] = 0;
             k++;
         }
     }  
     
-    for (int i = 0; i < n-1; i++) {
-        for (int j = 0; j < n ; j++) {
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < n -1; i++) {
     
-            if (mat[i][j] != 0 && mat[i][j] == mat[i][j+1]) {
+            if (mat[i][j] != 0 && mat[i][j] == mat[i+1][j]) {
                     mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
                     mat[i+1][j] = 0;     // Zera o segundo bloco
 
@@ -353,11 +353,10 @@ void moveC(int n, int mat[4][4]){
         }
     }
 
-    // andar para esquerda
-    for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
         int k = 0; // vai indicar minhas casas
     
-        for (int j = 0; j < n; j++) {
+        for (int i = 0; i < n; i++) {
             if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
                 mat[k][j] = mat[i][j];  
                 k++;
@@ -365,10 +364,10 @@ void moveC(int n, int mat[4][4]){
         }
     // colocar 0 onde vai ta vazia, para ficar vago
         while (k < n) {
-            mat[i][k] = 0;
+            mat[k][j] = 0;
             k++;
         }
-    }   
+    }    
 }
 
 
