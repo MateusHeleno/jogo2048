@@ -23,13 +23,18 @@
 
 
 void limpar_buffer(); // limpa o buffer
-void retiraN(char nome[]); // retira o \n do fgets
-void maiuscula(char nome[]); // tranforma tudo da string em maisucula
-void menuInicial(char *escolha);
-void jogo();
-void mapa(int n);
-void ajuda();
-void sair(char *escolha);
-void tamanhoJogo(int *n);
-
+void retiraN(char nome[]); // retira o \n do fgets e se necessário limpa o buffer
+void maiuscula(char nome[]); // tranforma tudo da string em maisucula nao pode ter acento
+void menuInicial(char *escolha); // imprime o menu e pede a escolha
+void jogo(); 
+void mapa(int n,int mat[4][4]); // imprime o tabuleiro
+void ajuda(); // mostra as regras
+void sair(char *escolha); // opção de sair do programa
+void tamanhoJogo(int *n); // pede ao usuario que decida o tamanho do tabuleiro
+void moveE(int n, int mat[4][4]);
+void moveD(int n, int mat[4][4]);
+void moveC(int n, int mat[4][4]);
+void moveB(int n, int mat[4][4]);
+/*int ** criaMatriz(int n);    
+void liberaMatriz(int **matriz, int n);*/
 #endif // JOGO2048_H

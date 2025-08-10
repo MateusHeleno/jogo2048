@@ -1,10 +1,24 @@
 #include "jogo2048.h"
 
 int main(){
-    int n;
-    char escolha;
-    int repetirMenu = 0;
-    menuInicial(&escolha);
+    int n = 4; // tamanho do tabuleiro 
+    /*int **tabuleiro;*/
+    char escolha; // escolha no menu
+    int repetirMenu = 0; // variavel para controlar a repetição do menu
+    menuInicial(&escolha); // começando o programa com o menu e pedindo a escolha
+    int mat[4][4];
+
+    for(int i = 0;i<n;i++){
+        for (int j = 0;j<n;j++){
+            mat[i][j] = 0;
+        }
+    }
+
+    mat[0][0] = 8;mat[0][1] = 0;mat[0][2] = 2;mat[0][3] = 2;
+    mat[1][1] = 4; 
+    mat[2][2] = 8;
+    mat[3][3] = 16;
+    
 
     do{
         switch(escolha){
@@ -14,9 +28,12 @@ int main(){
             break;
         case 'N': case 'n':
             tamanhoJogo(&n);
-            mapa(n);
-            printf("%d",n);
+            /*tabuleiro = criaMatriz(n);*/
+            
+            moveE(n,mat);
+            mapa(n,mat);
             repetirMenu = 0;
+            //liberaMatriz(tabuleiro,n);
             break;
         case 'J': case 'j':
             printf("%c\n",escolha);
@@ -48,7 +65,20 @@ int main(){
         }
     }while(repetirMenu);
 
-    
-  
     return 0;
 }
+
+/*int ** criaMatriz(int n){
+    int **matriz;
+    matriz = malloc(n * sizeof(int*));
+    for (int i = 0; i < n; i++) {
+        matriz[i] = malloc(n * sizeof(int));
+    }
+    return matriz;
+}
+
+void liberaMatriz(int **matriz, int n){
+    for (int i = 0; i < n; i++)
+        free(matriz[i]);
+    free(matriz);
+ }*/

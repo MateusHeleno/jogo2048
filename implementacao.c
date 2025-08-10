@@ -1,9 +1,17 @@
 #include "jogo2048.h"
-void jogo(){
-    int n;
-    char escolha;
-    int repetirMenu = 0;
-    menuInicial(&escolha);
+
+typedef struct{
+    char nome[20];
+    int rank,troca,desfazer;
+    int tabuleiro[4][4];
+}Jogo;
+
+
+/*void jogo(){
+    int n; // tamanho do tabuleiro 
+    char escolha; // escolha no menu
+    int repetirMenu = 0; // variavel para controlar a repetição do menu
+    menuInicial(&escolha); // começando o programa com o menu e pedindo a escolha
 
     do{
         switch(escolha){
@@ -21,6 +29,8 @@ void jogo(){
             printf("%c\n",escolha);
             repetirMenu = 0;
             break;
+            
+            
         case 'C': case 'c':
             printf("%c\n",escolha);
             repetirMenu = 0;
@@ -31,8 +41,7 @@ void jogo(){
             break;
         case 'M': case 'm':
             printf("%c\n",escolha);
-            repetirMenu = 0; //
-
+            repetirMenu = 0; 
             break;
         case 'A': case 'a':
             ajuda();
@@ -46,8 +55,7 @@ void jogo(){
             break;
         }
     }while(repetirMenu);
-
-}
+}*/
 
 void limpar_buffer()
 {
@@ -81,28 +89,47 @@ void menuInicial(char *escolha){
     limpar_buffer();
 }
 
-void mapa(int n){
-    // linha de cima    
+void mapa(int n,int mat[4][4]){
+    // teste
+    Jogo total[10];
+    
+    for(int i = 0;i<n;i++){
+        for (int j = 0;j<n;j++){
+            total[0].tabuleiro[i][j] = mat[i][j];
+        }
+    }
+   // até aqui 
+
+    // linha de cima 
     printf("%s",TAB_TL); // Ponta esquerda
     for(int i = 1;i<n;i++){ // começa do um porque a ponta eu ja coloquei
-        printf("%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_TJ); // Meio
+        printf("%s%s%s%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_TJ); // Meio
     }
-    printf("%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_TR); // Ponta direita
+    printf("%s%s%s%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_TR); // Ponta direita
 
     for(int i = 0; i < n;i++){ // impressao da matriz
         printf("%s",TAB_VER); // colocando a parede esquerda
         for(int j = 0; j < n; j++){ 
-            printf(" %d %s",5,TAB_VER); // imprimindo o valor e colocando as divisorias
-            }
+            if (mat[i][j] == 0)
+                printf("      %s",TAB_VER); // imprimindo o valor e colocando as divisorias
+            else if(mat[i][j] < 10)
+                printf("  %d   %s",total[0].tabuleiro[i][j],TAB_VER);
+            else if(mat[i][j] < 100)
+                printf("  %d  %s",total[0].tabuleiro[i][j],TAB_VER);
+            else if(mat[i][j] < 1000) 
+                printf(" %d  %s",total[0].tabuleiro[i][j],TAB_VER);
+            else  
+                printf(" %d %s",total[0].tabuleiro[i][j],TAB_VER);
+        }
 
         if (i< n-1 ){  // Controla a impressao só pra imprimir as linhas horizontais do meio 
             printf("\n%s",TAB_ML);  // primeira parede
             for (int j = 0; j <n;j++){ 
                 if (j < n-1 ) {  
-                    printf("%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_MJ); // impressao das horizontais e das divisorias menos a ultima
+                    printf("%s%s%s%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_MJ); // impressao das horizontais e das divisorias menos a ultima
                 }
                 else if ( j  == n-1 )
-                   printf("%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_MR); // impressao da ultima parte, porque a parede lateral é diferente 
+                   printf("%s%s%s%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_MR); // impressao da ultima parte, porque a parede lateral é diferente 
             }
             
         }
@@ -111,9 +138,9 @@ void mapa(int n){
     // linha de baixo  
     printf("\n%s",TAB_BL); // Ponta esquerda
     for(int i = 1;i<n;i++){
-        printf("%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_BJ); // Meio
+        printf("%s%s%s%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_BJ); // Meio
     }
-    printf("%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_BR); // Ponta direita
+    printf("%s%s%s%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_BR); // Ponta direita
 
 }
 
@@ -176,10 +203,71 @@ void tamanhoJogo(int *n){
     do{
         if (cont > 1)
             printf("\nOpção inválida, por favor escolha novamente");
-        printf("\n– (4) jogo padrão 4 x 4\n– (5) Jogo 5 x 5.\n– (6) Jogo 6 x 6.\nEscolha: ");
+        printf("\n– (4) Jogo padrão 4 x 4.\n– (5) Jogo 5 x 5.\n– (6) Jogo 6 x 6.\nEscolha: ");
         scanf("%d",n);
         cont++;
     }while( *n < 4 || *n > 6);
 
+}
 
+/*int ** criaMatriz(int n){
+    int **matriz;
+    matriz = malloc(n * sizeof(int*));
+    for (int i = 0; i < n; i++) {
+        matriz[i] = malloc(n * sizeof(int));
+    }
+    return matriz;
+}
+
+void liberaMatriz(int **matriz, int n){
+    for (int i = 0; i < n; i++)
+        free(matriz[i]);
+    free(matriz);
+ }*/  
+ 
+void moveE(int n, int mat[4][4]){ 
+    //andar para esquerda
+    for (int i = 0; i < n; i++) {
+        int k = 0; // vai indicar minhas casas
+    
+        for (int j = 0; j < n; j++) {
+            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                mat[i][k] = mat[i][j];  
+                k++;
+            }
+        }
+    // colocar 0 onde vai ta vazia, para ficar vago
+        while (k < n) {
+            mat[i][k] = 0;
+            k++;
+        }
+    }  
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n - 1; j++) {
+    
+            if (mat[i][j] != 0 && mat[i][j] == mat[i][j+1]) {
+                    mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
+                    mat[i][j+1] = 0;     // Zera o segundo bloco
+
+            }
+        }
+    }
+
+    // andar para esquerda
+    for (int i = 0; i < n; i++) {
+        int k = 0; // vai indicar minhas casas
+    
+        for (int j = 0; j < n; j++) {
+            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                mat[i][k] = mat[i][j];  
+                k++;
+            }
+        }
+        // colocar 0 onde vai ta vazia, para ficar vago
+        while (k < n) {
+            mat[i][k] = 0;
+            k++;
+        }
+    } 
 }
