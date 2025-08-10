@@ -225,6 +225,8 @@ void liberaMatriz(int **matriz, int n){
     free(matriz);
  }*/  
  
+
+// para os moviemntos de esquerda e direita vou fixar o valor do i e mexer apenas no j lendo a matriz da maneira convencional linha por linha 
 void moveE(int n, int mat[4][4]){ 
     //andar para esquerda
     for (int i = 0; i < n; i++) {
@@ -271,3 +273,102 @@ void moveE(int n, int mat[4][4]){
         }
     } 
 }
+
+void moveD(int n, int mat[4][4]){ 
+    //andar para direita
+    for (int i = 0; i < n; i++) {
+        int k = n-1; // vai indicar minhas casas
+    
+        for (int j = n-1; j >= 0; j--) {
+            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                mat[i][k] = mat[i][j];  
+                k--;
+            }
+        }
+    // colocar 0 onde vai ta vazia, para ficar vago
+        while (k >= 0) {
+            mat[i][k] = 0;
+            k--;
+        }
+    }  
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = n-1; j > 0; j--) {
+    
+            if (mat[i][j] != 0 && mat[i][j] == mat[i][j-1]) {
+                    mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
+                    mat[i][j-1] = 0;     // Zera o segundo bloco
+
+            }
+        }
+    }
+
+    //andar para direita
+    for (int i = 0; i < n; i++) {
+        int k = n-1; // vai indicar minhas casas
+    
+        for (int j = n-1; j >= 0; j--) {
+            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                mat[i][k] = mat[i][j];  
+                k--;
+            }
+        }
+    // colocar 0 onde vai ta vazia, para ficar vago
+        while (k >= 0) {
+            mat[i][k] = 0;
+            k--;
+        }
+    }
+
+}
+
+// para os moviemntos de cima e baixo vou fixar o valor do j e mexer apenas no i lendo a matriz da maneira inversa coluna po coluna, le uma coluna inteira e so dps pula pra próxima
+
+void moveC(int n, int mat[4][4]){ 
+    //andar para esquerda
+    for (int i = 0; i < n; i++) {
+        int k = 0; // vai indicar minhas casas
+    
+        for (int j = 0; j < n; j++) {
+            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                mat[k][j] = mat[i][j];  
+                k++;
+            }
+        }
+    // colocar 0 onde vai ta vazia, para ficar vago
+        while (k < n) {
+            mat[i][k] = 0;
+            k++;
+        }
+    }  
+    
+    for (int i = 0; i < n-1; i++) {
+        for (int j = 0; j < n ; j++) {
+    
+            if (mat[i][j] != 0 && mat[i][j] == mat[i][j+1]) {
+                    mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
+                    mat[i+1][j] = 0;     // Zera o segundo bloco
+
+            }
+        }
+    }
+
+    // andar para esquerda
+    for (int i = 0; i < n; i++) {
+        int k = 0; // vai indicar minhas casas
+    
+        for (int j = 0; j < n; j++) {
+            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                mat[k][j] = mat[i][j];  
+                k++;
+            }
+        }
+    // colocar 0 onde vai ta vazia, para ficar vago
+        while (k < n) {
+            mat[i][k] = 0;
+            k++;
+        }
+    }   
+}
+
+
