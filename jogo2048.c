@@ -30,6 +30,7 @@ int main(){
             tamanhoJogo(&n);
             /*tabuleiro = criaMatriz(n);*/
             
+            mapa(n,mat);          
             moveE(n,mat);
             mapa(n,mat);
             repetirMenu = 0;
@@ -50,7 +51,6 @@ int main(){
         case 'M': case 'm':
             printf("%c\n",escolha);
             repetirMenu = 0; //
-
             break;
         case 'A': case 'a':
             ajuda();

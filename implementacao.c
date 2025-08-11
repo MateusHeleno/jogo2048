@@ -238,7 +238,7 @@ void moveE(int n, int mat[4][4]){
                 k++;
             }
         }
-    // colocar 0 onde vai ta vazia, para ficar vago
+    // colocar 0 onde vai ta vazia, para ficar vago, e com ctz ela ja vai ter puxado tudo antes
         while (k < n) {
             mat[i][k] = 0;
             k++;
@@ -416,6 +416,55 @@ void moveB(int n, int mat[4][4]){
         }
     } 
 
+}
+
+void novoNumero(int n,int mat[4][4]){
+    int x,y,valor,cont = 1,probabilidade;
+    switch(n){
+        case 4:
+            probabilidade = 10;
+            break;
+        case 5:
+            probabilidade = 15;
+            break;
+        case 6:
+            probabilidade = 20;
+            break;
+    }
+    while(cont) {
+        x= rand() % 4;//gera uma posição para x
+        y= rand() % 4;//gera uma posição para y
+        valor = (rand() % 100) + 1 ;// vai gerar um valor entre 1 e 10
+        
+        if(valor > probabilidade)
+            valor = 2;
+        else 
+            valor = 4;
+
+        if(mat[x][y] == 0){ 
+            mat[x][y] = valor;
+            cont = 0;
+        }
+    }
+}
+
+
+/* conferir se é igual eu vou somar os valor da coluna quando movimento for horizontal
+    conferir se a linha é igual quando o movmimento for vertical
+
+    ou entt vou fazer um if conferindo se todos sao iguais por meio de uma variavel auxiliar 
+    se a == b  variavel fica 1
+        else 0 return
+
+        pq se for diferente ja ode acabar o código , mostra que houve algum movimento
+*/ 
+
+void preencher0(int n,int mat[4][4]){
+    for(int i = 0;i<n;i++){
+        for (int j = 0;j<n;j++){
+            mat[i][j] = 0;
+        }
+    }
 }
 
 

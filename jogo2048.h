@@ -35,6 +35,8 @@ void moveE(int n, int mat[4][4]);
 void moveD(int n, int mat[4][4]);
 void moveC(int n, int mat[4][4]);
 void moveB(int n, int mat[4][4]);
+void novoNumero(int n,int mat[4][4]);
+void preencher0(int n,int mat[4][4]);
 /*int ** criaMatriz(int n);    
 void liberaMatriz(int **matriz, int n);*/
 #endif // JOGO2048_H
