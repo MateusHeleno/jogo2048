@@ -3,7 +3,7 @@
 typedef struct{
     char nome[20];
     int rank,troca,desfazer;
-    int tabuleiro[4][4];
+    int tabuleiro[6][6];
 }Jogo;
 
 
@@ -89,13 +89,13 @@ void menuInicial(char *escolha){
     limpar_buffer();
 }
 
-void mapa(int n,int mat[4][4]){
+void mapa(int n,int **tabuleiro){
     // teste
     Jogo total[10];
     
     for(int i = 0;i<n;i++){
         for (int j = 0;j<n;j++){
-            total[0].tabuleiro[i][j] = mat[i][j];
+            total[0].tabuleiro[i][j] = tabuleiro[i][j];
         }
     }
    // até aqui 
@@ -110,13 +110,13 @@ void mapa(int n,int mat[4][4]){
     for(int i = 0; i < n;i++){ // impressao da matriz
         printf("%s",TAB_VER); // colocando a parede esquerda
         for(int j = 0; j < n; j++){ 
-            if (mat[i][j] == 0)
+            if (tabuleiro[i][j] == 0)
                 printf("      %s",TAB_VER); // imprimindo o valor e colocando as divisorias
-            else if(mat[i][j] < 10)
+            else if(tabuleiro[i][j] < 10)
                 printf("  %d   %s",total[0].tabuleiro[i][j],TAB_VER);
-            else if(mat[i][j] < 100)
+            else if(tabuleiro[i][j] < 100)
                 printf("  %d  %s",total[0].tabuleiro[i][j],TAB_VER);
-            else if(mat[i][j] < 1000) 
+            else if(tabuleiro[i][j] < 1000) 
                 printf(" %d  %s",total[0].tabuleiro[i][j],TAB_VER);
             else  
                 printf(" %d %s",total[0].tabuleiro[i][j],TAB_VER);
@@ -200,47 +200,52 @@ void sair(char *escolha){
 
 void tamanhoJogo(int *n){
     int cont = 1;
+    char c;
     do{
         if (cont > 1)
             printf("\nOpção inválida, por favor escolha novamente");
         printf("\n– (4) Jogo padrão 4 x 4.\n– (5) Jogo 5 x 5.\n– (6) Jogo 6 x 6.\nEscolha: ");
-        scanf("%d",n);
+        scanf("%c",&c);
+        limpar_buffer();
         cont++;
-    }while( *n < 4 || *n > 6);
+    }while( c < '4' || c > '6');
+
+    *n = c - '0';
 
 }
 
-/*int ** criaMatriz(int n){
-    int **matriz;
-    matriz = malloc(n * sizeof(int*));
-    for (int i = 0; i < n; i++) {
-        matriz[i] = malloc(n * sizeof(int));
-    }
-    return matriz;
+int **criaMatriz(int n)
+{
+   int **matriz;
+   matriz = malloc(n * sizeof(int*));
+   for (int i = 0; i < n; i++) {
+       matriz[i] = malloc(n * sizeof(int));
+   }
+   return matriz;
 }
 
-void liberaMatriz(int **matriz, int n){
+void liberaMatriz(int n,int **tabuleiro){
     for (int i = 0; i < n; i++)
-        free(matriz[i]);
-    free(matriz);
- }*/  
+        free(tabuleiro[i]);
+    free(tabuleiro);
+ }
  
 
 // para os moviemntos de esquerda e direita vou fixar o valor do i e mexer apenas no j lendo a matriz da maneira convencional linha por linha 
-void moveE(int n, int mat[4][4]){ 
+void moveE(int n, int **tabuleiro){ 
     //andar para esquerda
     for (int i = 0; i < n; i++) {
         int k = 0; // vai indicar minhas casas
     
         for (int j = 0; j < n; j++) {
-            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
-                mat[i][k] = mat[i][j];  
+            if  (tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                tabuleiro[i][k] = tabuleiro[i][j];  
                 k++;
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago, e com ctz ela ja vai ter puxado tudo antes
         while (k < n) {
-            mat[i][k] = 0;
+            tabuleiro[i][k] = 0;
             k++;
         }
     }  
@@ -248,9 +253,9 @@ void moveE(int n, int mat[4][4]){
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n - 1; j++) {
     
-            if (mat[i][j] != 0 && mat[i][j] == mat[i][j+1]) {
-                    mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
-                    mat[i][j+1] = 0;     // Zera o segundo bloco
+            if  (tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i][j+1]) {
+                    tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
+                    tabuleiro[i][j+1] = 0;     // Zera o segundo bloco
 
             }
         }
@@ -261,33 +266,33 @@ void moveE(int n, int mat[4][4]){
         int k = 0; // vai indicar minhas casas
     
         for (int j = 0; j < n; j++) {
-            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
-                mat[i][k] = mat[i][j];  
+            if  (tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                tabuleiro[i][k] = tabuleiro[i][j];  
                 k++;
             }
         }
         // colocar 0 onde vai ta vazia, para ficar vago
         while (k < n) {
-            mat[i][k] = 0;
+            tabuleiro[i][k] = 0;
             k++;
         }
     } 
 }
 
-void moveD(int n, int mat[4][4]){ 
+void moveD(int n, int **tabuleiro){ 
     //andar para direita
     for (int i = 0; i < n; i++) {
         int k = n-1; // vai indicar minhas casas
     
         for (int j = n-1; j >= 0; j--) {
-            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
-                mat[i][k] = mat[i][j];  
+            if(tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                tabuleiro[i][k] = tabuleiro[i][j];  
                 k--;
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago
         while (k >= 0) {
-            mat[i][k] = 0;
+            tabuleiro[i][k] = 0;
             k--;
         }
     }  
@@ -295,9 +300,9 @@ void moveD(int n, int mat[4][4]){
     for (int i = 0; i < n; i++) {
         for (int j = n-1; j > 0; j--) {
     
-            if (mat[i][j] != 0 && mat[i][j] == mat[i][j-1]) {
-                    mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
-                    mat[i][j-1] = 0;     // Zera o segundo bloco
+            if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i][j-1]){
+                tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
+                tabuleiro[i][j-1] = 0;     // Zera o segundo bloco
 
             }
         }
@@ -308,36 +313,36 @@ void moveD(int n, int mat[4][4]){
         int k = n-1; // vai indicar minhas casas
     
         for (int j = n-1; j >= 0; j--) {
-            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
-                mat[i][k] = mat[i][j];  
+            if(tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                tabuleiro[i][k] = tabuleiro[i][j];  
                 k--;
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago
         while (k >= 0) {
-            mat[i][k] = 0;
+            tabuleiro[i][k] = 0;
             k--;
         }
     }
 
 }
 
-// para os moviemntos de cima e baixo vou fixar o valor do j e mexer apenas no i lendo a matriz da maneira inversa coluna po coluna, le uma coluna inteira e so dps pula pra próxima
+// para os moviemntos de cima e baixo vou fixar o valor do j e mexer apenas no i lendo a tabuleiroriz da maneira inversa coluna po coluna, le uma coluna inteira e so dps pula pra próxima
 
-void moveC(int n, int mat[4][4]){ 
+void moveC(int n, int **tabuleiro){ 
     //andar para cima
-    for (int j = 0; j < n; j++) { // invertando a ordem do i e j para ler a matriz de coluna por coluna
+    for (int j = 0; j < n; j++) { // invertando a ordem do i e j para ler a tabuleiroriz de coluna por coluna
         int k = 0; // vai indicar minhas casas 
     
         for (int i = 0; i < n; i++) {
-            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
-                mat[k][j] = mat[i][j];  
+            if(tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                tabuleiro[k][j] = tabuleiro[i][j];  
                 k++;
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago
         while (k < n) {
-            mat[k][j] = 0;
+            tabuleiro[k][j] = 0;
             k++;
         }
     }  
@@ -345,9 +350,9 @@ void moveC(int n, int mat[4][4]){
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n -1; i++) {
     
-            if (mat[i][j] != 0 && mat[i][j] == mat[i+1][j]) {
-                    mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
-                    mat[i+1][j] = 0;     // Zera o segundo bloco
+            if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i+1][j]) {
+                tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
+                tabuleiro[i+1][j] = 0;     // Zera o segundo bloco
 
             }
         }
@@ -357,33 +362,33 @@ void moveC(int n, int mat[4][4]){
         int k = 0; // vai indicar minhas casas
     
         for (int i = 0; i < n; i++) {
-            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
-                mat[k][j] = mat[i][j];  
+            if(tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                tabuleiro[k][j] = tabuleiro[i][j];  
                 k++;
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago
         while (k < n) {
-            mat[k][j] = 0;
-            k++;
+            tabuleiro[k][j] = 0;
+            k++;    
         }
     }    
 }
 
-void moveB(int n, int mat[4][4]){ 
+void moveB(int n, int **tabuleiro){ 
     //andar para direita
     for (int j = 0; j < n; j++) {
         int k = n-1; // vai indicar minhas casas
     
         for (int i = n-1; i >= 0; i--) {
-            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
-                mat[k][j] = mat[i][j];  
+            if(tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                tabuleiro[k][j] = tabuleiro[i][j];  
                 k--;
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago
         while (k >= 0) {
-            mat[k][j] = 0;
+            tabuleiro[k][j] = 0;
             k--;
         }
     }  
@@ -391,9 +396,9 @@ void moveB(int n, int mat[4][4]){
     for (int j = 0; j < n; j++) {
         for (int i = n-1; i > 0; i--) {
     
-            if (mat[i][j] != 0 && mat[i][j] == mat[i-1][j]) {
-                    mat[i][j] = mat[i][j] * 2;      // Dobra o valor do primeiro bloco
-                    mat[i-1][j] = 0;     // Zera o segundo bloco
+            if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i-1][j]) {
+                tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
+                tabuleiro[i-1][j] = 0;     // Zera o segundo bloco
 
             }
         }
@@ -404,21 +409,21 @@ void moveB(int n, int mat[4][4]){
         int k = n-1; // vai indicar minhas casas
     
         for (int i = n-1; i >= 0; i--) {
-            if (mat[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
-                mat[k][j] = mat[i][j];  
+            if(tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
+                tabuleiro[k][j] = tabuleiro[i][j];  
                 k--;
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago
         while (k >= 0) {
-            mat[k][j] = 0;
+            tabuleiro[k][j] = 0;
             k--;
         }
     } 
 
 }
 
-void novoNumero(int n,int mat[4][4]){
+void novoNumero(int n,int **tabuleiro){
     int x,y,valor,cont = 1,probabilidade;
     switch(n){
         case 4:
@@ -432,8 +437,8 @@ void novoNumero(int n,int mat[4][4]){
             break;
     }
     while(cont) {
-        x= rand() % 4;//gera uma posição para x
-        y= rand() % 4;//gera uma posição para y
+        x= rand() % n;//gera uma posição para x
+        y= rand() % n;//gera uma posição para y
         valor = (rand() % 100) + 1 ;// vai gerar um valor entre 1 e 10
         
         if(valor > probabilidade)
@@ -441,8 +446,8 @@ void novoNumero(int n,int mat[4][4]){
         else 
             valor = 4;
 
-        if(mat[x][y] == 0){ 
-            mat[x][y] = valor;
+        if(tabuleiro[x][y] == 0){ 
+            tabuleiro[x][y] = valor;
             cont = 0;
         }
     }
@@ -459,10 +464,10 @@ void novoNumero(int n,int mat[4][4]){
         pq se for diferente ja ode acabar o código , mostra que houve algum movimento
 */ 
 
-void preencher0(int n,int mat[4][4]){
+void preencher0(int n,int **tabuleiro){
     for(int i = 0;i<n;i++){
         for (int j = 0;j<n;j++){
-            mat[i][j] = 0;
+            tabuleiro[i][j] = 0;
         }
     }
 }
