@@ -425,8 +425,8 @@ void moveB(int n, int **tabuleiro){
 
 void novoNumero(int n,int **tabuleiro){
     int x,y,valor,cont = 1,probabilidade;
-    switch(n){
-        case 4:
+    switch(n){ // decide a probabilidade de ser um 4
+        case 4: 
             probabilidade = 10;
             break;
         case 5:
@@ -453,8 +453,16 @@ void novoNumero(int n,int **tabuleiro){
     }
 }
 
+/*void validacao(int n, int **tabuleiro){
+    for(int i = 0;i<n;i++){
+        for (int j = 0;j<n;j++){
+            tabuleiro[i][j] = mat[i][j];
+        }
+    }
+}*/
+/* a cada ciclo vou salvar a jogada pra ele poder voltar e ela vai ser utlizada na validação 
 
-/* conferir se é igual eu vou somar os valor da coluna quando movimento for horizontal
+conferir se é igual eu vou somar os valor da coluna quando movimento for horizontal
     conferir se a linha é igual quando o movmimento for vertical
 
     ou entt vou fazer um if conferindo se todos sao iguais por meio de uma variavel auxiliar 
@@ -464,7 +472,10 @@ void novoNumero(int n,int **tabuleiro){
         pq se for diferente ja ode acabar o código , mostra que houve algum movimento
 */ 
 
-void preencher0(int n,int **tabuleiro){
+/*pensar em maneira de tabbuleiro
+estava olhando o 2 elevado a x*/
+
+void preencher0(int n,int **tabuleiro){ // coloca zero em todas as posições da matriz
     for(int i = 0;i<n;i++){
         for (int j = 0;j<n;j++){
             tabuleiro[i][j] = 0;

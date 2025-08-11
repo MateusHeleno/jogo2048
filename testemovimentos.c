@@ -41,6 +41,6 @@ int main(){
         }
         novoNumero(n,tabuleiro);
         my++;
-    }while( my < 5); //totalmente proisório
+    }while( my  > -1); //totalmente proisório
     liberaMatriz(n,tabuleiro);
 }
