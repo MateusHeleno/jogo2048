@@ -28,6 +28,7 @@ int main(){
             break;
         case 'N': case 'n':
             tamanhoJogo(&n);
+            
             /*tabuleiro = criaMatriz(n);*/
             
             mapa(n,tabuleiro);          

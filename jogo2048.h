@@ -39,4 +39,7 @@ void novoNumero(int n,int **tabuleiro);
 void preencher0(int n,int **tabuleiro);
 int **criaMatriz(int n);    
 void liberaMatriz(int n,int **tabuleiro);
+void criarArquivo(int n,int **tabuleiro);
+int validacao(int n, int **tabuleiro);
+void comandos();
 #endif // JOGO2048_H

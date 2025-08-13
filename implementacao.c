@@ -163,6 +163,9 @@ void ajuda() {
     printf("- Para vencer, o jogador deve formar uma peça com o número 2048.\n");
     printf("- O jogador perde se não houver mais movimentos válidos possíveis.\n\n");
 
+    printf("Os comandos que podem ser usadosdurante o jogo são:");
+    comandos();
+
     char saida[3]; // Esperado a resposta OK
     int cont = 1;
     do{
@@ -453,13 +456,38 @@ void novoNumero(int n,int **tabuleiro){
     }
 }
 
-/*void validacao(int n, int **tabuleiro){
-    for(int i = 0;i<n;i++){
-        for (int j = 0;j<n;j++){
-            tabuleiro[i][j] = mat[i][j];
+void criarArquivo(int n,int **tabuleiro){
+    FILE *saida  = fopen("gravacao.dat","wb");
+    fwrite(&n,sizeof(int),1,saida); // escrevendo o tamnho do tabuleiro 
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            fwrite(&tabuleiro[i][j], sizeof(int), 1, saida); // aloca cada linha manualmente
         }
     }
-}*/
+    
+    fclose(saida);
+}
+
+int validacao(int n, int **tabuleiro){
+    FILE *entrada = fopen("gravacao.dat","rb");
+    int conteudo,nA;
+    fread(&nA, sizeof(int), 1, entrada);
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            fread(&conteudo, sizeof(int), 1, entrada); //pega um valor da posição i j da matriz
+    
+            if (tabuleiro[i][j] !=conteudo) {
+                return 1; 
+            }
+        }
+    }
+    
+    fclose(entrada);
+
+    return 0;
+}
 /* a cada ciclo vou salvar a jogada pra ele poder voltar e ela vai ser utlizada na validação 
 
 conferir se é igual eu vou somar os valor da coluna quando movimento for horizontal
@@ -472,8 +500,9 @@ conferir se é igual eu vou somar os valor da coluna quando movimento for horizo
         pq se for diferente ja ode acabar o código , mostra que houve algum movimento
 */ 
 
+
 /*pensar em maneira de tabbuleiro
-estava olhando o 2 elevado a x*/
+estava olhando o 10 elevado a x*/
 
 void preencher0(int n,int **tabuleiro){ // coloca zero em todas as posições da matriz
     for(int i = 0;i<n;i++){
@@ -481,6 +510,13 @@ void preencher0(int n,int **tabuleiro){ // coloca zero em todas as posições da
             tabuleiro[i][j] = 0;
         }
     }
+}
+
+void comandos(){
+    printf("<a, d, s, w>: Move as peças do tabuleiro para esquerda, direita, para baixo ou para cima, respectivamente.\n");
+    printf("<u>: Desfazer o último movimento.\n"); 
+    printf("<t>: Trocar duas peças de posição, ou seja, troca o conteúdo da posição pos1 com o conteúdo da posição pos2.\n");
+    printf("Voltar: Volta para o menu inicial.\n\n");
 }
 
 
