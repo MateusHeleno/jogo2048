@@ -40,6 +40,8 @@ void preencher0(int n,int **tabuleiro);
 int **criaMatriz(int n);    
 void liberaMatriz(int n,int **tabuleiro);
 void criarArquivo(int n,int **tabuleiro);
-int validacao(int n, int **tabuleiro);
+int validacao(int n,int** copiaTabuleiro,int **tabuleiro);
+int **copiaTabuleiro(int n,int **tabuleiro);
 void comandos();
+void anteceder(int n, int **tabuleiro);
 #endif // JOGO2048_H

@@ -228,10 +228,11 @@ int **criaMatriz(int n)
 }
 
 void liberaMatriz(int n,int **tabuleiro){
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++){ 
         free(tabuleiro[i]);
+    }
     free(tabuleiro);
- }
+}
  
 
 // para os moviemntos de esquerda e direita vou fixar o valor do i e mexer apenas no j lendo a matriz da maneira convencional linha por linha 
@@ -244,6 +245,7 @@ void moveE(int n, int **tabuleiro){
             if  (tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
                 tabuleiro[i][k] = tabuleiro[i][j];  
                 k++;
+                
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago, e com ctz ela ja vai ter puxado tudo antes
@@ -256,11 +258,10 @@ void moveE(int n, int **tabuleiro){
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n - 1; j++) {
     
-            if  (tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i][j+1]) {
-                    tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
-                    tabuleiro[i][j+1] = 0;     // Zera o segundo bloco
-
-            }
+            if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i][j+1]) {
+                tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
+                tabuleiro[i][j+1] = 0;     // Zera o segundo bloco
+            }   
         }
     }
 
@@ -272,6 +273,7 @@ void moveE(int n, int **tabuleiro){
             if  (tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
                 tabuleiro[i][k] = tabuleiro[i][j];  
                 k++;
+                
             }
         }
         // colocar 0 onde vai ta vazia, para ficar vago
@@ -297,6 +299,7 @@ void moveD(int n, int **tabuleiro){
         while (k >= 0) {
             tabuleiro[i][k] = 0;
             k--;
+            
         }
     }  
     
@@ -306,7 +309,7 @@ void moveD(int n, int **tabuleiro){
             if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i][j-1]){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i][j-1] = 0;     // Zera o segundo bloco
-
+                
             }
         }
     }
@@ -356,7 +359,7 @@ void moveC(int n, int **tabuleiro){
             if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i+1][j]) {
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i+1][j] = 0;     // Zera o segundo bloco
-
+                
             }
         }
     }
@@ -368,6 +371,7 @@ void moveC(int n, int **tabuleiro){
             if(tabuleiro[i][j] != 0) { // sef for diferente de 0, ele vai pra contar no K, se nao for nao importa, pq pode ser puxado
                 tabuleiro[k][j] = tabuleiro[i][j];  
                 k++;
+                
             }
         }
     // colocar 0 onde vai ta vazia, para ficar vago
@@ -402,7 +406,7 @@ void moveB(int n, int **tabuleiro){
             if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i-1][j]) {
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i-1][j] = 0;     // Zera o segundo bloco
-
+                
             }
         }
     }
@@ -469,24 +473,21 @@ void criarArquivo(int n,int **tabuleiro){
     fclose(saida);
 }
 
-int validacao(int n, int **tabuleiro){
+void anteceder(int n, int **tabuleiro){
     FILE *entrada = fopen("gravacao.dat","rb");
-    int conteudo,nA;
+    int nA;
     fread(&nA, sizeof(int), 1, entrada);
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            fread(&conteudo, sizeof(int), 1, entrada); //pega um valor da posição i j da matriz
-    
-            if (tabuleiro[i][j] !=conteudo) {
-                return 1; 
-            }
+    for (int i = 0; i < nA; i++) {
+        for (int j = 0; j < nA; j++) {
+            fread(&tabuleiro[i][j], sizeof(int), 1, entrada); //pega um valor da posição i j da matriz            
         }
     }
+
+
     
     fclose(entrada);
 
-    return 0;
 }
 /* a cada ciclo vou salvar a jogada pra ele poder voltar e ela vai ser utlizada na validação 
 
@@ -519,4 +520,23 @@ void comandos(){
     printf("Voltar: Volta para o menu inicial.\n\n");
 }
 
+int **copiaTabuleiro(int n,int **tabuleiro){
+    int **copiaTabuleiro = criaMatriz(n);
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++) {
+                copiaTabuleiro[i][j] = tabuleiro[i][j];
+            }
+        }
+    return copiaTabuleiro;
+}
 
+int validacao(int n,int** copiaTabuleiro,int **tabuleiro){  
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++) {
+                if(copiaTabuleiro[i][j] != tabuleiro[i][j]) {
+                    return 1; 
+                }
+        }
+    }
+    return 0;
+}
