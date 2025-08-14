@@ -1,3 +1,6 @@
+/* Mateus Oliveira Heleno
+   25.1.4007 */
+
 #include "jogo2048.h"
 
 int main(){
@@ -14,10 +17,8 @@ int main(){
     preencher0(n,tabuleiro);
     char escolha;
 
-    tabuleiro[0][0] = 8;tabuleiro[0][1] = 0;tabuleiro[0][2] = 2;tabuleiro[0][3] = 2;
-    tabuleiro[1][1] = 4; 
-    tabuleiro[2][2] = 8;
-    tabuleiro[3][3] = 16;
+    novoNumero(n,tabuleiro);
+    novoNumero(n,tabuleiro);
 
     char instrucao[10];
     criarArquivo(n,tabuleiro);
@@ -26,7 +27,7 @@ int main(){
         int incorreto;
         mapa(n,tabuleiro);
         
-        novoNumero(n,tabuleiro);
+        
         
         comandos();
         int movimento = 0;
@@ -92,7 +93,7 @@ int main(){
             if(validacao(n,copiaTab,tabuleiro) == 0){ 
                 printf("Movimento inválido,nenhuma peça se moveu. Tente uma direção diferente!;\n");
             }
-            else{ 
+            else{
                 novoNumero(n,tabuleiro);
             }
             liberaMatriz(n,copiaTab);
