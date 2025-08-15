@@ -25,21 +25,41 @@ void retiraN(char nome[])
         limpar_buffer();
 }
 
+void retiraEspacos(char *nome) {
+    int tam = strlen(nome);
+    int j = 0; // índice para escrever a nova string
+
+    for (int i = 0; i < tam; i++) {
+        if (nome[i] != ' ') {     // só copia se não for espaço
+            nome[j] = nome[i];
+            j++;
+        }
+    }
+    nome[j] = '\0'; // finaliza a string
+}
+
+char tornarMaior(char c)
+{
+    if (c >= 'a' && c <= 'z') {
+        return c - 32;
+    }
+    
+    return c;
+}
+
 void maiuscula(char nome[]){
     int tam = strlen(nome);
     for (int i =0; i < tam;i++){
-        nome[i] = toupper(nome[i]);
+        nome[i] = tornarMaior(nome[i]);
     }
 }
 
-void menuInicial(char *escolha){
+void menuInicial(){
     printf("\n ============= MENU =============\n");
     printf("(R) Sair\n(N) Novo jogo\n(J) Continuar o jogo atual\n");
     printf("(C) Carregar um jogo salvo\n(S) Salvar o jogo atual\n");
     printf("(M) Mostrar Ranking\n(A) Ajuda com as instruções de como jogar\n");
     printf("\nEscolha: ");
-    scanf("%c",escolha);//escolha ja é um endereço de memória
-    limpar_buffer();
 }
 
 int maiorNumero(int n,int **tabuleiro) {
@@ -157,15 +177,15 @@ void mapa(int n,int **tabuleiro,int pontuacao,int desfeito,int trocado){
             
             printf(TAB_VER);
 
-            if(i == 0 && j == 3){ 
+            if(i == 0 && j == n-1){ 
                 printf("\tPontuação: %d",pontuacao);
                 break;
             }
-            else if(i == 1 && j == 3){ 
+            else if(i == 1 && j == n-1){ 
                 printf("\tMovimentos para desfazer: %d",desfeito);  
                 break;
             }
-            else if(i == 2 && j == 3){  
+            else if(i == 2 && j == n-1){  
                 printf("\tMovimentos para troca de posição: %d",trocado);
                 break;
             }
@@ -210,9 +230,7 @@ void ajuda() {
     printf("- Para vencer, o jogador deve formar uma peça com o número 2048.\n");
     printf("- O jogador perde se não houver mais movimentos válidos possíveis.\n\n");
 
-    printf("Os comandos que podem ser usadosdurante o jogo são:");
-    comandos();
-
+    
     char saida[3]; // Esperado a resposta OK
     int cont = 1;
     do{
@@ -228,40 +246,42 @@ void ajuda() {
     }while(strcmp(saida,"OK"));
 }
 
-void sair(char *escolha){
-    char decisao[12];
+int sair(){
+    char decisao[4];
     int cont = 1;
     do{
         if(cont > 1)
-            printf("Digite apenas \"Continuar\" ou \"Sair\" para fazer sua escolha: ");// a barra invertida \ antes das aspas é para digitar ela no terminal
+            printf("Digite apenas \"S\" ou \"N\" para fazer sua escolha: ");// a barra invertida \ antes das aspas é para digitar ela no terminal
         else
-            printf("\nVocê deseja sair do jogo ?Responda com \"Continuar\" para ficar e \"Sair\" para fechar o jogo: ");
+            printf("\nVocê deseja sair do jogo ?Responda com \"S\" para ficar e \"N\" para fechar o jogo: ");
     
-        fgets(decisao,12,stdin);
+        fgets(decisao,4,stdin);
         retiraN(decisao); //Retira o \n e limpar o buffer
         maiuscula(decisao);
         cont++;
-    }while(strcmp(decisao, "CONTINUAR") != 0 && strcmp(decisao, "SAIR") != 0); // strcmp retorna 0 se forem iguais
-    if(!strcmp(decisao, "SAIR"))
-        exit(0);
+    }while(strcmp(decisao, "S") != 0 && strcmp(decisao, "N") != 0); // strcmp retorna 0 se forem iguais
+    if(!strcmp(decisao, "S"))
+        return 1;
     else 
-        menuInicial(escolha);    
+        return 0; 
 }
 
 int tamanhoJogo(){
     int cont = 1;
-    char c;
+    char c[7];
     do{
         if (cont > 1)
             printf("\nOpção inválida, por favor escolha novamente");
         printf("\n– (4) Jogo padrão 4 x 4.\n– (5) Jogo 5 x 5.\n– (6) Jogo 6 x 6.\nEscolha: ");
-        scanf("%c",&c);
-        limpar_buffer();
+        fgets(c,7,stdin);
+        retiraN(c);
+        retiraEspacos(c);
+        if(strlen(c) != 1)
+            c[0] = 0;
         cont++;
-    }while( c < '4' || c > '6');
+    }while( c[0] < '4' || c[0] > '6');
 
-    return (c - '0');
-
+    return (c[0] - '0');
 }
 
 int **criaMatriz(int n)
@@ -548,7 +568,8 @@ void comandos(){
     printf("<a, d, s, w>: Move as peças do tabuleiro para esquerda, direita, para baixo ou para cima, respectivamente.\n");
     printf("<u>: Desfazer o último movimento.\n"); 
     printf("<t pos1, pos2>:: Trocar duas peças de posição, ou seja, troca o conteúdo da posição pos1 com o conteúdo da posição pos2.\n");
-    printf("Voltar: Volta para o menu inicial                                           .\n\n");
+    printf("Voltar: Volta para o menu inicial.\n\n");
+    printf("Escolha: ");
 }
 
 int **copiaTabuleiro(int n,int **tabuleiro){
@@ -611,3 +632,129 @@ int numTroca(int n,int **tabuleiro){
 void troca(){
     
 }
+
+void inicializarTabuleiro(int n,int **tabuleiro){
+    novoNumero(n,tabuleiro);
+    novoNumero(n,tabuleiro);
+}
+
+int jogo(){ 
+    int n;
+    int desfazer = 0,countDesfeito = 0;
+    int countTrocado = 0;
+    int pontuacao = 0,jogadas = 0;
+    char escolha,instrucao[20],nome[20];
+    srand(time(NULL));
+    
+    n = tamanhoJogo();// fazendo a escolha do tamnho do jogo
+    
+    int **tabuleiro = criaMatriz(n); // aloca a matriz com o tamanho de N
+    preencher0(n,tabuleiro); // preenche a matriz com 0 para imprimir espaço
+
+    tabuleiro[0][1] = 2048;
+    inicializarTabuleiro(n,tabuleiro); // incializa com dois valores aleatórios
+
+    do{
+        int **copiaTab;
+        int incorreto;
+        int desfeito = numDesfazer(n,tabuleiro) - countDesfeito;
+        int trocado = numTroca(n,tabuleiro) - countTrocado;
+
+        mapa(n,tabuleiro,pontuacao,desfeito,trocado);
+        
+        comandos();
+        int movimento = 0;
+        do{
+            incorreto = 0;
+            fgets(instrucao,20,stdin);
+            retiraN(instrucao);
+            maiuscula(instrucao);
+                        
+            printf("\n");
+            if(strcmp(instrucao, "VOLTAR") == 0){ 
+                // salvar arquivo antes de sair criarArquivo(n,tabuleiro)
+                if(jogadas > 0)
+                    liberaMatriz(n,copiaTab);
+                liberaMatriz(n,tabuleiro);
+                return 0;
+
+
+            }
+            else if(strcmp(instrucao, "A") == 0){    
+                copiaTab = copiaTabuleiro(n,tabuleiro);
+                
+                moveE(n,tabuleiro,&pontuacao);
+                
+                movimento = 1;
+                
+            } 
+            else if(strcmp(instrucao, "D") == 0){ 
+                copiaTab = copiaTabuleiro(n,tabuleiro);
+                
+                moveD(n,tabuleiro,&pontuacao);
+                                
+                movimento = 1;
+            }
+            else if(strcmp(instrucao, "W") == 0){  
+                copiaTab  = copiaTabuleiro(n,tabuleiro);
+                
+                moveC(n,tabuleiro,&pontuacao);
+    
+                movimento = 1;
+            }
+            else if(strcmp(instrucao, "S") == 0){  
+                copiaTab = copiaTabuleiro(n,tabuleiro);
+                
+                moveB(n,tabuleiro,&pontuacao);
+                
+                movimento = 1;
+            }
+            else if(strcmp(instrucao, "U") == 0){ 
+                desfazer++;
+                if(desfazer == 1){
+                    if(desfeito > 0){ 
+                        anteceder(n,tabuleiro);
+                        countDesfeito++;
+                    }
+                    else
+                        printf("Você não tem mais movimentos para voltar\n");
+                }
+                else    
+                    printf("Você não pode voltar duas vezes seguidas, favor fazer outro movimento.\n");
+                
+            }
+            else if(strcmp(instrucao,"T POS1, POS2") == 0){ //pensando em usar sscanf
+    
+                    if(trocado > 0){ 
+                        printf("%s\n",instrucao);
+                        countTrocado++;
+                    }
+                    else
+                        printf("Você não tem mais movimentos para trocar\n");
+                    
+            }
+            else{    
+                printf("\nOpção inválida, por favor escolha novamente dentre os comandos apresentados\n");
+                incorreto = 1;
+            }
+        }while(incorreto == 1);
+
+        if(movimento == 1){ 
+            if(validacaoJogada(n,copiaTab,tabuleiro) == 0){ 
+                printf("Movimento inválido,nenhuma peça se moveu. Tente uma direção diferente!;\n");
+                if(desfazer == 1)
+                    desfazer = 0;
+            }
+            else{
+                criarArquivo(n,copiaTab); // vai salvar a matriz q ele copiou antes do movimento, entao nao da pra usar no salvamento, pois n tem o ultimo movimento
+                jogadas++;
+                novoNumero(n,tabuleiro);
+                desfazer =0; // como entrou em número, sabe que ele nao repetiu o desfazer
+            }
+            
+            liberaMatriz(n,copiaTab); // aloquei a matriz no copia tab, e aqui eu livrei
+        }
+           
+    }while(1); 
+}
+

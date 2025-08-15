@@ -4,52 +4,50 @@
 #include "jogo2048.h"
 
 int main(){
-    int n = 4; // tamanho do tabuleiro 
-    /*int **tabuleiro;*/
-    char escolha; // escolha no menu
-    int repetirMenu = 0; // variavel para controlar a repetição do menu
-    menuInicial(&escolha); // começando o programa com o menu e pedindo a escolha
-    int tabuleiro[4][4];
- 
-    do{
-        switch(escolha){
-        case 'R': case 'r': 
-            sair(&escolha);
-            repetirMenu = 1; //  tenho que colocar esse repetir menu = 0, pra dps da primeira iteração quando ele voltar aqui parar de repetir
-            break;
-        case 'N': case 'n':
-            tamanhoJogo(&n);
-            
-            repetirMenu = 0;
-            break;
-        case 'J': case 'j':
-            printf("%c\n",escolha);
-            repetirMenu = 0;
-            break;
-        case 'C': case 'c':
-            printf("%c\n",escolha);
-            repetirMenu = 0;
-            break;
-        case 'S': case 's':
-            printf("%c\n",escolha);
-            repetirMenu = 0;
-            break;
-        case 'M': case 'm':
-            printf("%c\n",escolha);
-            repetirMenu = 0; //
-            break;
-        case 'A': case 'a':
-            ajuda();
-            menuInicial(&escolha);
-            repetirMenu = 1;
-            break;
-        default:
-            printf("\nOpção inválida, por favor escolha as opções listadas abaixo\n");
-            menuInicial(&escolha);
-            repetirMenu = 1;
-            break;
-        }
-    }while(repetirMenu);
+    
+    char escolha[7]; // escolha no menu
+    
+    while(1){ 
+        menuInicial(); // começando o programa com o menu e pedindo a escolha
+        fgets(escolha,7,stdin);
+        retiraN(escolha);
+        retiraEspacos(escolha);
+        maiuscula(escolha);
+
+        if(strlen(escolha) != 1) // se ela tiver tamanho maior que 1 ela escreve algo incorreto na posicao 1
+            escolha[0] = 0;
+
+        switch(escolha[0]){
+            case 'R': case 'r': 
+                if(sair() == 1){ 
+                    printf("\nEspero que tenha gostado da experiência,volte sempre !!\nSaindo do jogo...\n");
+                    return 0;
+                }                
+                break;
+            case 'N': case 'n':
+                jogo();
+                //jogo
+                break;
+            case 'J': case 'j':
+                printf("%s\n",escolha);
+                break;
+            case 'C': case 'c':
+                printf("%s\n",escolha);
+                break;
+            case 'S': case 's':
+                printf("%s\n",escolha);
+                break;
+            case 'M': case 'm':
+                printf("%s\n",escolha);
+                break;
+            case 'A': case 'a':
+                ajuda();
+                break;
+            default:
+                printf("\nOpção inválida, por favor escolha as opções listadas abaixo\n");
+                break;
+            }
+    }
 
     return 0;
 }

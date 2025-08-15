@@ -3,29 +3,22 @@
 
 #include "jogo2048.h"
 
-int main(){
-    
+int main(){ 
     int n;
-    
-    int my = 0;
     int desfazer = 0,countDesfeito = 0;
     int countTrocado = 0;
-    n = tamanhoJogo();
-    int pontuacao =0;
-   
-    int **tabuleiro = criaMatriz(n);
+    int pontuacao = 0,jogadas = 0;
+    char escolha,instrucao[20],nome[20];
     srand(time(NULL));
     
-    preencher0(n,tabuleiro);
-    char escolha;
+    n = tamanhoJogo();// fazendo a escolha do tamnho do jogo
+    
+    int **tabuleiro = criaMatriz(n); // aloca a matriz com o tamanho de N
+    preencher0(n,tabuleiro); // preenche a matriz com 0 para imprimir espaço
 
-    tabuleiro[0][1] = 512;
+    tabuleiro[0][1] = 2048;
+    inicializarTabuleiro(n,tabuleiro); // incializa com dois valores aleatórios
 
-    novoNumero(n,tabuleiro);
-    novoNumero(n,tabuleiro);
-
-    char instrucao[20];
-    criarArquivo(n,tabuleiro);
     do{
         int **copiaTab;
         int incorreto;
@@ -34,50 +27,50 @@ int main(){
 
         mapa(n,tabuleiro,pontuacao,desfeito,trocado);
         
-        
-        
         comandos();
         int movimento = 0;
         do{
             incorreto = 0;
-            printf("Escolha: ");
             fgets(instrucao,20,stdin);
             retiraN(instrucao);
             maiuscula(instrucao);
-            printf("%s",instrucao);
+                        
             printf("\n");
             if(strcmp(instrucao, "VOLTAR") == 0){ 
-                menuInicial(&escolha);
+                // salvar arquivo antes de sair criarArquivo(n,tabuleiro)
+                if(jogadas > 0)
+                    liberaMatriz(n,copiaTabuleiro);
+                liberaMatriz(n,tabuleiro);
+                return 0;
+
+
             }
             else if(strcmp(instrucao, "A") == 0){    
                 copiaTab = copiaTabuleiro(n,tabuleiro);
                 
                 moveE(n,tabuleiro,&pontuacao);
                 
-                
                 movimento = 1;
+                
             } 
             else if(strcmp(instrucao, "D") == 0){ 
                 copiaTab = copiaTabuleiro(n,tabuleiro);
                 
                 moveD(n,tabuleiro,&pontuacao);
-                
-                
+                                
                 movimento = 1;
             }
             else if(strcmp(instrucao, "W") == 0){  
                 copiaTab  = copiaTabuleiro(n,tabuleiro);
                 
                 moveC(n,tabuleiro,&pontuacao);
-                
-                
+    
                 movimento = 1;
             }
             else if(strcmp(instrucao, "S") == 0){  
                 copiaTab = copiaTabuleiro(n,tabuleiro);
                 
                 moveB(n,tabuleiro,&pontuacao);
-                
                 
                 movimento = 1;
             }
@@ -119,16 +112,14 @@ int main(){
             }
             else{
                 criarArquivo(n,copiaTab); // vai salvar a matriz q ele copiou antes do movimento, entao nao da pra usar no salvamento, pois n tem o ultimo movimento
+                jogadas++;
                 novoNumero(n,tabuleiro);
                 desfazer =0; // como entrou em número, sabe que ele nao repetiu o desfazer
             }
             
-            liberaMatriz(n,copiaTab);
+            liberaMatriz(n,copiaTab); // aloquei a matriz no copia tab, e aqui eu livrei
         }
-        
-        
-        my++;  
-    }while( my  > -1); //totalmente proisório
-    
-    liberaMatriz(n,tabuleiro);
+           
+    }while(1); 
 }
+
