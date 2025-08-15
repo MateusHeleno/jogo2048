@@ -82,7 +82,7 @@ void linhaHorizontal(int n,int digitos){
        printf(TAB_MD"\n");
 }
 
-void mapa(int n,int **tabuleiro,int pontuacao){
+void mapa(int n,int **tabuleiro,int pontuacao,int desfeito,int trocado){
     
     int maior = maiorNumero(n,tabuleiro);
     int digitos = quantidadeDigitos(maior); // esse um é colocado pelo for
@@ -162,11 +162,11 @@ void mapa(int n,int **tabuleiro,int pontuacao){
                 break;
             }
             else if(i == 1 && j == 3){ 
-                printf("\tMovimentos para desfazer: %d",numDesfazer(n,tabuleiro));  
+                printf("\tMovimentos para desfazer: %d",desfeito);  
                 break;
             }
             else if(i == 2 && j == 3){  
-                printf("\tMovimentos para troca de posição: %d",numTroca(n,tabuleiro));
+                printf("\tMovimentos para troca de posição: %d",trocado);
                 break;
             }
         }

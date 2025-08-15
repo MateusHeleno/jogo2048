@@ -30,7 +30,7 @@ void retiraN(char nome[]); // retira o \n do fgets e se necessário limpa o buff
 void maiuscula(char nome[]); // tranforma tudo da string em maisucula nao pode ter acento
 void menuInicial(char *escolha); // imprime o menu e pede a escolha
 void jogo(); 
-void mapa(int n,int **tabuleiro,int pontuacao); // imprime o tabuleiro
+void mapa(int n,int **tabuleiro,int pontuacao,int desfeito,int trocado); // imprime o tabuleiro
 void ajuda(); // mostra as regras
 void sair(char *escolha); // opção de sair do programa
 int tamanhoJogo(); // pede ao usuario que decida o tamanho do tabuleiro

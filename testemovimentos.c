@@ -7,7 +7,9 @@ int main(){
     
     int n;
     
-    int my = 0,desfazer = 0;
+    int my = 0;
+    int desfazer = 0,countDesfeito = 0;
+    int countTrocado = 0;
     n = tamanhoJogo();
     int pontuacao =0;
    
@@ -27,7 +29,10 @@ int main(){
     do{
         int **copiaTab;
         int incorreto;
-        mapa(n,tabuleiro,pontuacao);
+        int desfeito = numDesfazer(n,tabuleiro) - countDesfeito;
+        int trocado = numTroca(n,tabuleiro) - countTrocado;
+
+        mapa(n,tabuleiro,pontuacao,desfeito,trocado);
         
         
         
@@ -78,15 +83,27 @@ int main(){
             }
             else if(strcmp(instrucao, "U") == 0){ 
                 desfazer++;
-                if(desfazer == 1)
-                    anteceder(n,tabuleiro);
+                if(desfazer == 1){
+                    if(desfeito > 0){ 
+                        anteceder(n,tabuleiro);
+                        countDesfeito++;
+                    }
+                    else
+                        printf("Você não tem mais movimentos para voltar\n");
+                }
                 else    
                     printf("Você não pode voltar duas vezes seguidas, favor fazer outro movimento.\n");
                 
             }
             else if(strcmp(instrucao,"T POS1, POS2") == 0){ //pensando em usar sscanf
-                printf("%s",instrucao);
-                /*troca();*/
+    
+                    if(trocado > 0){ 
+                        printf("%s\n",instrucao);
+                        countTrocado++;
+                    }
+                    else
+                        printf("Você não tem mais movimentos para trocar\n");
+                    
             }
             else{    
                 printf("\nOpção inválida, por favor escolha novamente dentre os comandos apresentados\n");
