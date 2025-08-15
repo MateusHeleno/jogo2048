@@ -1,3 +1,7 @@
+/* Mateus Oliveira Heleno
+   25.1.4007 */
+
+
 #include "jogo2048.h"
 
 typedef struct{
@@ -5,57 +9,6 @@ typedef struct{
     int rank,troca,desfazer;
     int tabuleiro[6][6];
 }Jogo;
-
-
-/*void jogo(){
-    int n; // tamanho do tabuleiro 
-    char escolha; // escolha no menu
-    int repetirMenu = 0; // variavel para controlar a repetição do menu
-    menuInicial(&escolha); // começando o programa com o menu e pedindo a escolha
-
-    do{
-        switch(escolha){
-        case 'R': case 'r': 
-            sair(&escolha);
-            repetirMenu = 1; //  tenho que colocar esse repetir menu = 0, pra dps da primeira iteração quando ele voltar aqui parar de repetir
-            break;
-        case 'N': case 'n':
-            tamanhoJogo(&n);
-            mapa(n);
-            printf("%d",n);
-            repetirMenu = 0;
-            break;
-        case 'J': case 'j':
-            printf("%c\n",escolha);
-            repetirMenu = 0;
-            break;
-            
-            
-        case 'C': case 'c':
-            printf("%c\n",escolha);
-            repetirMenu = 0;
-            break;
-        case 'S': case 's':
-            printf("%c\n",escolha);
-            repetirMenu = 0;
-            break;
-        case 'M': case 'm':
-            printf("%c\n",escolha);
-            repetirMenu = 0; 
-            break;
-        case 'A': case 'a':
-            ajuda();
-            menuInicial(&escolha);
-            repetirMenu = 1;
-            break;
-        default:
-            printf("\nOpção inválida, por favor escolha as opções listadas abaixo\n");
-            menuInicial(&escolha);
-            repetirMenu = 1;
-            break;
-        }
-    }while(repetirMenu);
-}*/
 
 void limpar_buffer()
 {
@@ -89,59 +42,153 @@ void menuInicial(char *escolha){
     limpar_buffer();
 }
 
-void mapa(int n,int **tabuleiro){
-    // teste
-    Jogo total[10];
+int maiorNumero(int n,int **tabuleiro) {
+    int maior = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (tabuleiro[i][j] > maior) {
+                maior = tabuleiro[i][j];
+            }
+        }
+    }
+    return maior;
+}
+
+int quantidadeDigitos(int numero) {
+    // Se o número for 0  ele tem 1 dígito
+    if (numero == 0) {
+        return 1;
+    }
     
+    int digito = 0;
+    while (numero > 0) {
+        numero = numero / 10;
+        digito++;
+    }
+    return digito;
+}
+
+void linhaHorizontal(int n,int digitos){
+    printf("   ");
+    printf(TAB_ME);
     for(int i = 0;i<n;i++){
-        for (int j = 0;j<n;j++){
-            total[0].tabuleiro[i][j] = tabuleiro[i][j];
+        for(int j =0;j <digitos + 2; j++){ 
+            printf(TAB_HOR);
+        }
+        
+        if(i < n -1)
+            printf(TAB_MM);
+    }
+       printf(TAB_MD"\n");
+}
+
+void mapa(int n,int **tabuleiro,int pontuacao){
+    
+    int maior = maiorNumero(n,tabuleiro);
+    int digitos = quantidadeDigitos(maior); // esse um é colocado pelo for
+
+    int espacoE,espacoD;
+
+    if(digitos % 2 == 0){ // descobrindo se os digitos são pares
+        espacoE = digitos / 2;
+        espacoD = digitos / 2;
+    }
+    else{
+        espacoE = digitos / 2 + 1; //se for impar, colocar mais um espaço na esquerda
+        espacoD = digitos / 2 ;
+    }
+
+    printf("   "); // espaço de inicio das coordenadas da letra
+
+    for(int i = 0;i<n;i++){
+        for(int j = 0; j<espacoE;j++){
+        printf(" "); // espaco do lado esquerdo
+        }  
+
+        printf(" %d ",i+1); // impressão das coordenadas da linhas
+
+        for(int k = 0; k<espacoD;k++){ //espaco do lado direito
+            printf(" "); 
         }
     }
-   // até aqui 
-
-    // linha de cima 
-    printf("%s",TAB_TL); // Ponta esquerda
-    for(int i = 1;i<n;i++){ // começa do um porque a ponta eu ja coloquei
-        printf("%s%s%s%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_TJ); // Meio
-    }
-    printf("%s%s%s%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_TR); // Ponta direita
-
-    for(int i = 0; i < n;i++){ // impressao da matriz
-        printf("%s",TAB_VER); // colocando a parede esquerda
-        for(int j = 0; j < n; j++){ 
-            if (tabuleiro[i][j] == 0)
-                printf("      %s",TAB_VER); // imprimindo o valor e colocando as divisorias
-            else if(tabuleiro[i][j] < 10)
-                printf("  %d   %s",total[0].tabuleiro[i][j],TAB_VER);
-            else if(tabuleiro[i][j] < 100)
-                printf("  %d  %s",total[0].tabuleiro[i][j],TAB_VER);
-            else if(tabuleiro[i][j] < 1000) 
-                printf(" %d  %s",total[0].tabuleiro[i][j],TAB_VER);
-            else  
-                printf(" %d %s",total[0].tabuleiro[i][j],TAB_VER);
+    printf("\n"); //  caindo pra primeira linha da coluna
+    
+  
+    printf("   "); // espaço de inicio das coordenadas da letra
+    printf(TAB_AE); // ponta esquerda
+    for(int i = 0;i<n;i++){
+        for(int j =0;j <digitos + 2; j++){ 
+            printf(TAB_HOR); // meio 
         }
+        
+        if(i < n -1)
+            printf(TAB_AM); // se nao for o final ter a junção
+    }
+    printf(TAB_AD"\n"); // ponta direita 
 
-        if (i< n-1 ){  // Controla a impressao só pra imprimir as linhas horizontais do meio 
-            printf("\n%s",TAB_ML);  // primeira parede
-            for (int j = 0; j <n;j++){ 
-                if (j < n-1 ) {  
-                    printf("%s%s%s%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_MJ); // impressao das horizontais e das divisorias menos a ultima
-                }
-                else if ( j  == n-1 )
-                   printf("%s%s%s%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_MR); // impressao da ultima parte, porque a parede lateral é diferente 
+   ;
+    for(int i = 0;i<n;i++){
+        printf("%c  ",i+'A'); // a letra da coordena e os espaços
+        printf(TAB_VER);// primeira vertical 
+        for(int j =0;j <n; j++){
+            int digParcial = digitos - quantidadeDigitos(tabuleiro[i][j]); 
+            if(digParcial % 2 == 0){
+                espacoE = digParcial / 2;
+                espacoD = digParcial / 2;
+            }
+            else{
+                espacoE = digParcial / 2  + 1 ;
+                espacoD = digParcial / 2  ;
+            }
+
+            for(int k = 0; k < espacoE;k++){
+                printf(" "); // espaco do lado esquerdo
+            }
+
+            if(tabuleiro[i][j] == 0)
+                printf("   "); // se for zero, imprimir espaço
+            else 
+                printf(" %d ",tabuleiro[i][j]); // imprimindo o número
+
+            
+            for(int k = 0; k<espacoD;k++){
+                printf(" "); // espaco do lado direito
             }
             
+            printf(TAB_VER);
+
+            if(i == 0 && j == 3){ 
+                printf("\tPontuação: %d",pontuacao);
+                break;
+            }
+            else if(i == 1 && j == 3){ 
+                printf("\tMovimentos para desfazer: %d",numDesfazer(n,tabuleiro));  
+                break;
+            }
+            else if(i == 2 && j == 3){  
+                printf("\tMovimentos para troca de posição: %d",numTroca(n,tabuleiro));
+                break;
+            }
         }
-    }
+        
+        printf("\n");
+        if(i < n-1)
+            linhaHorizontal(n,digitos);
+        }
 
-    // linha de baixo  
-    printf("\n%s",TAB_BL); // Ponta esquerda
-    for(int i = 1;i<n;i++){
-        printf("%s%s%s%s%s%s%s",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_BJ); // Meio
+    printf("   ");
+    printf(TAB_BE);
+    for(int i = 0;i<n;i++){
+        for(int j =0;j <digitos + 2; j++){ 
+            printf(TAB_HOR);
+        }
+        
+        if(i < n -1)
+            printf(TAB_BM);
     }
-    printf("%s%s%s%s%s%s%s\n",TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_HOR,TAB_BR); // Ponta direita
+    printf(TAB_BD);
 
+    printf("\n\n");
 }
 
 void ajuda() {
@@ -201,7 +248,7 @@ void sair(char *escolha){
         menuInicial(escolha);    
 }
 
-void tamanhoJogo(int *n){
+int tamanhoJogo(){
     int cont = 1;
     char c;
     do{
@@ -213,7 +260,7 @@ void tamanhoJogo(int *n){
         cont++;
     }while( c < '4' || c > '6');
 
-    *n = c - '0';
+    return (c - '0');
 
 }
 
@@ -233,10 +280,9 @@ void liberaMatriz(int n,int **tabuleiro){
     }
     free(tabuleiro);
 }
- 
 
 // para os moviemntos de esquerda e direita vou fixar o valor do i e mexer apenas no j lendo a matriz da maneira convencional linha por linha 
-void moveE(int n, int **tabuleiro){ 
+void moveE(int n, int **tabuleiro,int *pontuacao){ 
     //andar para esquerda
     for (int i = 0; i < n; i++) {
         int k = 0; // vai indicar minhas casas
@@ -261,6 +307,7 @@ void moveE(int n, int **tabuleiro){
             if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i][j+1]) {
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i][j+1] = 0;     // Zera o segundo bloco
+                *pontuacao += tabuleiro[i][j];
             }   
         }
     }
@@ -284,7 +331,7 @@ void moveE(int n, int **tabuleiro){
     } 
 }
 
-void moveD(int n, int **tabuleiro){ 
+void moveD(int n, int **tabuleiro,int *pontuacao){ 
     //andar para direita
     for (int i = 0; i < n; i++) {
         int k = n-1; // vai indicar minhas casas
@@ -309,7 +356,7 @@ void moveD(int n, int **tabuleiro){
             if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i][j-1]){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i][j-1] = 0;     // Zera o segundo bloco
-                
+                *pontuacao += tabuleiro[i][j];
             }
         }
     }
@@ -334,8 +381,7 @@ void moveD(int n, int **tabuleiro){
 }
 
 // para os moviemntos de cima e baixo vou fixar o valor do j e mexer apenas no i lendo a tabuleiroriz da maneira inversa coluna po coluna, le uma coluna inteira e so dps pula pra próxima
-
-void moveC(int n, int **tabuleiro){ 
+void moveC(int n, int **tabuleiro,int *pontuacao){ 
     //andar para cima
     for (int j = 0; j < n; j++) { // invertando a ordem do i e j para ler a tabuleiroriz de coluna por coluna
         int k = 0; // vai indicar minhas casas 
@@ -359,7 +405,7 @@ void moveC(int n, int **tabuleiro){
             if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i+1][j]) {
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i+1][j] = 0;     // Zera o segundo bloco
-                
+                *pontuacao += tabuleiro[i][j] ;
             }
         }
     }
@@ -382,7 +428,7 @@ void moveC(int n, int **tabuleiro){
     }    
 }
 
-void moveB(int n, int **tabuleiro){ 
+void moveB(int n, int **tabuleiro,int *pontuacao){ 
     //andar para direita
     for (int j = 0; j < n; j++) {
         int k = n-1; // vai indicar minhas casas
@@ -406,7 +452,7 @@ void moveB(int n, int **tabuleiro){
             if(tabuleiro[i][j] != 0 && tabuleiro[i][j] == tabuleiro[i-1][j]) {
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i-1][j] = 0;     // Zera o segundo bloco
-                
+                *pontuacao += tabuleiro[i][j];
             }
         }
     }
@@ -489,35 +535,20 @@ void anteceder(int n, int **tabuleiro){
     fclose(entrada);
 
 }
-/* a cada ciclo vou salvar a jogada pra ele poder voltar e ela vai ser utlizada na validação 
-
-conferir se é igual eu vou somar os valor da coluna quando movimento for horizontal
-    conferir se a linha é igual quando o movmimento for vertical
-
-    ou entt vou fazer um if conferindo se todos sao iguais por meio de uma variavel auxiliar 
-    se a == b  variavel fica 1
-        else 0 return
-
-        pq se for diferente ja ode acabar o código , mostra que houve algum movimento
-*/ 
-
-
-/*pensar em maneira de tabbuleiro
-estava olhando o 10 elevado a x*/
 
 void preencher0(int n,int **tabuleiro){ // coloca zero em todas as posições da matriz
-    for(int i = 0;i<n;i++){
-        for (int j = 0;j<n;j++){
-            tabuleiro[i][j] = 0;
+        for(int i = 0;i<n;i++){
+            for (int j = 0;j<n;j++){
+                tabuleiro[i][j] = 0;
+            }
         }
-    }
 }
 
 void comandos(){
     printf("<a, d, s, w>: Move as peças do tabuleiro para esquerda, direita, para baixo ou para cima, respectivamente.\n");
     printf("<u>: Desfazer o último movimento.\n"); 
-    printf("<t>: Trocar duas peças de posição, ou seja, troca o conteúdo da posição pos1 com o conteúdo da posição pos2.\n");
-    printf("Voltar: Volta para o menu inicial.\n\n");
+    printf("<t pos1, pos2>:: Trocar duas peças de posição, ou seja, troca o conteúdo da posição pos1 com o conteúdo da posição pos2.\n");
+    printf("Voltar: Volta para o menu inicial                                           .\n\n");
 }
 
 int **copiaTabuleiro(int n,int **tabuleiro){
@@ -530,7 +561,7 @@ int **copiaTabuleiro(int n,int **tabuleiro){
     return copiaTabuleiro;
 }
 
-int validacao(int n,int** copiaTabuleiro,int **tabuleiro){  
+int validacaoJogada(int n,int** copiaTabuleiro,int **tabuleiro){  
         for(int i = 0; i < n; i++) {
             for(int j = 0; j < n; j++) {
                 if(copiaTabuleiro[i][j] != tabuleiro[i][j]) {
@@ -539,4 +570,44 @@ int validacao(int n,int** copiaTabuleiro,int **tabuleiro){
         }
     }
     return 0;
+}
+
+int mostraPontuacao(int n, int **tabuleiro){
+    int ranking = 0;
+
+    for(int i =0;i<n;i++){
+        for(int j = 0;j<n;j++){
+            ranking += tabuleiro[i][j];
+        }
+    }
+    return ranking;
+}
+
+int numDesfazer(int n,int **tabuleiro){
+    
+    int desfazer = 0;
+    for(int i =0;i<n;i++){
+        for(int j = 0;j<n;j++){
+            if(tabuleiro[i][j] >=512)
+                desfazer += tabuleiro[i][j];
+        }
+    }
+
+    return (desfazer / 512);
+}
+
+int numTroca(int n,int **tabuleiro){
+    int troca = 0;
+    for(int i =0;i<n;i++){
+        for(int j = 0;j<n;j++){
+            if(tabuleiro[i][j] >=256)
+                troca += tabuleiro[i][j];
+        }
+    }
+
+    return (troca / 256);
+}
+
+void troca(){
+    
 }

@@ -7,9 +7,9 @@ int main(){
     
     int n;
     
-    int my = 0;
-    tamanhoJogo(&n);
-    
+    int my = 0,desfazer = 0;
+    n = tamanhoJogo();
+    int pontuacao =0;
    
     int **tabuleiro = criaMatriz(n);
     srand(time(NULL));
@@ -17,15 +17,17 @@ int main(){
     preencher0(n,tabuleiro);
     char escolha;
 
+    tabuleiro[0][1] = 512;
+
     novoNumero(n,tabuleiro);
     novoNumero(n,tabuleiro);
 
-    char instrucao[10];
+    char instrucao[20];
     criarArquivo(n,tabuleiro);
     do{
         int **copiaTab;
         int incorreto;
-        mapa(n,tabuleiro);
+        mapa(n,tabuleiro,pontuacao);
         
         
         
@@ -34,54 +36,57 @@ int main(){
         do{
             incorreto = 0;
             printf("Escolha: ");
-            fgets(instrucao,10,stdin);
+            fgets(instrucao,20,stdin);
             retiraN(instrucao);
             maiuscula(instrucao);
-            
+            printf("%s",instrucao);
             printf("\n");
             if(strcmp(instrucao, "VOLTAR") == 0){ 
                 menuInicial(&escolha);
             }
             else if(strcmp(instrucao, "A") == 0){    
                 copiaTab = copiaTabuleiro(n,tabuleiro);
-                criarArquivo(n,tabuleiro);
-                moveE(n,tabuleiro);
+                
+                moveE(n,tabuleiro,&pontuacao);
                 
                 
                 movimento = 1;
             } 
             else if(strcmp(instrucao, "D") == 0){ 
                 copiaTab = copiaTabuleiro(n,tabuleiro);
-                criarArquivo(n,tabuleiro);
-                moveD(n,tabuleiro);
+                
+                moveD(n,tabuleiro,&pontuacao);
                 
                 
                 movimento = 1;
             }
             else if(strcmp(instrucao, "W") == 0){  
                 copiaTab  = copiaTabuleiro(n,tabuleiro);
-                criarArquivo(n,tabuleiro);
-                moveC(n,tabuleiro);
+                
+                moveC(n,tabuleiro,&pontuacao);
                 
                 
                 movimento = 1;
             }
             else if(strcmp(instrucao, "S") == 0){  
                 copiaTab = copiaTabuleiro(n,tabuleiro);
-                criarArquivo(n,tabuleiro);
-                moveB(n,tabuleiro);
+                
+                moveB(n,tabuleiro,&pontuacao);
                 
                 
                 movimento = 1;
             }
             else if(strcmp(instrucao, "U") == 0){ 
-                //colcoar confição para quantos antenceder
-                anteceder(n,tabuleiro);
+                desfazer++;
+                if(desfazer == 1)
+                    anteceder(n,tabuleiro);
+                else    
+                    printf("Você não pode voltar duas vezes seguidas, favor fazer outro movimento.\n");
                 
             }
-            else if(strcmp(instrucao, "T") == 0){ 
+            else if(strcmp(instrucao,"T POS1, POS2") == 0){ //pensando em usar sscanf
                 printf("%s",instrucao);
-                
+                /*troca();*/
             }
             else{    
                 printf("\nOpção inválida, por favor escolha novamente dentre os comandos apresentados\n");
@@ -90,12 +95,17 @@ int main(){
         }while(incorreto == 1);
 
         if(movimento == 1){ 
-            if(validacao(n,copiaTab,tabuleiro) == 0){ 
+            if(validacaoJogada(n,copiaTab,tabuleiro) == 0){ 
                 printf("Movimento inválido,nenhuma peça se moveu. Tente uma direção diferente!;\n");
+                if(desfazer == 1)
+                    desfazer = 0;
             }
             else{
+                criarArquivo(n,copiaTab); // vai salvar a matriz q ele copiou antes do movimento, entao nao da pra usar no salvamento, pois n tem o ultimo movimento
                 novoNumero(n,tabuleiro);
+                desfazer =0; // como entrou em número, sabe que ele nao repetiu o desfazer
             }
+            
             liberaMatriz(n,copiaTab);
         }
         

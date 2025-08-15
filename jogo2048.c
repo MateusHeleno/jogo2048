@@ -1,3 +1,6 @@
+/* Mateus Oliveira Heleno
+   25.1.4007 */
+
 #include "jogo2048.h"
 
 int main(){
@@ -7,19 +10,7 @@ int main(){
     int repetirMenu = 0; // variavel para controlar a repetição do menu
     menuInicial(&escolha); // começando o programa com o menu e pedindo a escolha
     int tabuleiro[4][4];
-
-    for(int i = 0;i<n;i++){
-        for (int j = 0;j<n;j++){
-            tabuleiro[i][j] = 0;
-        }
-    }
-
-    tabuleiro[0][0] = 8;tabuleiro[0][1] = 0;tabuleiro[0][2] = 2;tabuleiro[0][3] = 2;
-    tabuleiro[1][1] = 4; 
-    tabuleiro[2][2] = 8;
-    tabuleiro[3][3] = 16;
-    
-
+ 
     do{
         switch(escolha){
         case 'R': case 'r': 
@@ -29,13 +20,7 @@ int main(){
         case 'N': case 'n':
             tamanhoJogo(&n);
             
-            /*tabuleiro = criaMatriz(n);*/
-            
-            mapa(n,tabuleiro);          
-            moveE(n,tabuleiro);
-            mapa(n,tabuleiro);
             repetirMenu = 0;
-            //liberaMatriz(tabuleiro,n);
             break;
         case 'J': case 'j':
             printf("%c\n",escolha);
