@@ -29,7 +29,7 @@ void limpar_buffer(); // limpa o buffer
 void retiraN(char nome[]); // retira o \n do fgets e se necessário limpa o buffer
 void maiuscula(char nome[]); // tranforma tudo da string em maisucula nao pode ter acento
 void menuInicial(); // imprime o menu e pede a escolha
-void mapa(int n,int **tabuleiro,int pontuacao,int desfeito,int trocado); // imprime o tabuleiro
+void mapa(int n,int **tabuleiro,int pontuacao,int desfeito,int trocado,char *nome); // imprime o tabuleiro
 void ajuda(); // mostra as regras
 int sair(); // opção de sair do programa
 int tamanhoJogo(); // pede ao usuario que decida o tamanhro do tabuleiro

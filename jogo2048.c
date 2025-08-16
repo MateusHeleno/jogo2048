@@ -39,6 +39,7 @@ int main(){
                 break;
             case 'M': case 'm':
                 printf("%s\n",escolha);
+                printf("%s\n",escolha); // so para salvar os comentarios de uma vez
                 break;
             case 'A': case 'a':
                 ajuda();
