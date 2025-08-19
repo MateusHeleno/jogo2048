@@ -247,22 +247,22 @@ void mapa(Jogo *jogador){
             
             printf(TAB_VER);
 
-            /*if(i == 0 && j == n-1){ 
+            if(i == 0 && j == n-1){ 
                 printf("\tNome: %s",jogador->nome);
                 break;
             }
             else if(i == 1 && j == n-1){ 
-                printf("\tPontuação: %d",pontuacao);
+                printf("\tPontuação: %d",jogador->pontuacao);
                 break;
             }
             else if(i == 2 && j == n-1){  
-                printf("\tMovimentos para desfazer: %d",desfeito);  
+                printf("\tMovimentos para desfazer: %d",jogador->desfazer);  
                 break;
             }
             else if(i == 3 && j == n-1){
-                printf("\tMovimentos para troca de posição: %d",trocado);
+                printf("\tMovimentos para troca de posição: %d",jogador->troca);
                 break;
-            }*/
+            }
         }
         
         printf("\n");
@@ -315,6 +315,12 @@ void moveE(Jogo *jogador){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i][j+1] = 0;     // Zera o segundo bloco
                 jogador->pontuacao += tabuleiro[i][j];
+                
+                if(tabuleiro[i][j] == 256)
+                    (jogador->troca)++;
+                if(tabuleiro[i][j] == 512)
+                    (jogador->desfazer)++; 
+            
             }   
         }
     }
@@ -366,7 +372,16 @@ void moveD(Jogo *jogador){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i][j-1] = 0;     // Zera o segundo bloco
                 jogador->pontuacao += tabuleiro[i][j] ;           
-             }
+            
+                if(tabuleiro[i][j] == 256)
+                    (jogador->troca)++;
+                if(tabuleiro[i][j] == 512)
+                    (jogador->desfazer)++; 
+            
+            
+            }
+
+
         }
     }
 
@@ -417,6 +432,12 @@ void moveC(Jogo *jogador){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i+1][j] = 0;     // Zera o segundo bloco
                 jogador->pontuacao += tabuleiro[i][j] ;
+
+                if(tabuleiro[i][j] == 256)
+                    (jogador->troca)++;
+                if(tabuleiro[i][j] == 512)
+                    (jogador->desfazer)++; 
+            
             }
         }
     }
@@ -466,6 +487,12 @@ void moveB(Jogo *jogador){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i-1][j] = 0;     // Zera o segundo bloco
                 jogador->pontuacao += tabuleiro[i][j];
+
+                if(tabuleiro[i][j] == 256)
+                    (jogador->troca)++;
+                if(tabuleiro[i][j] == 512)
+                    (jogador->desfazer)++; 
+            
             }
         }
     }
@@ -585,7 +612,7 @@ void anteceder(Jogo *jogador){
 void preencher0(Jogo *jogador){ // coloca zero em todas as posições da matriz
         for(int i = 0;i<jogador->n;i++){
             for (int j = 0;j<jogador->n;j++){
-                jogador->tabuleiro[i][j] = 0;
+                jogador->tabuleiro[i][j] = 128;
             }
         }
 }
@@ -603,42 +630,6 @@ int validacaoJogada(Jogo *jogador,int** copiaTabuleiro){
     return 0;
 }
 
-int mostraPontuacao(Jogo *jogador){
-    int ranking = 0;
-    int n = jogador->n;
-    for(int i =0;i<n;i++){
-        for(int j = 0;j<n;j++){
-            ranking += jogador->tabuleiro[i][j];
-        }
-    }
-    return ranking;
-}
-
-int numDesfazer(Jogo *jogador){
-    int n = jogador->n;
-    int desfazer = 0;
-    for(int i =0;i<n;i++){
-        for(int j = 0;j<n;j++){
-            if(jogador->tabuleiro[i][j] >=512)
-                desfazer += jogador->tabuleiro[i][j];
-        }
-    }
-
-    return (desfazer / 512);
-}
-
-int numTroca(Jogo *jogador){
-    int troca = 0;
-    int n = jogador->n;
-    for(int i =0;i<n;i++){
-        for(int j = 0;j<n;j++){
-            if(jogador->tabuleiro[i][j] >=256)
-                troca += jogador->tabuleiro[i][j];
-        }
-    }
-
-    return (troca / 256);
-}
 
 void inicializarTabuleiro(Jogo *jogador){
     novoNumero(jogador);
@@ -655,9 +646,6 @@ int jogo(){
     jogador.desfazer = 0;
 
     int desfazerRep = 0;
-    int countDesfeito = 0;
-    int countTrocado = 0;
-    int jogadas = 0;
     char instrucao[20],nome[27];
     srand(time(NULL));
     
@@ -674,9 +662,6 @@ int jogo(){
     do{
         int **copiaTab;
         int incorreto;
-        int desfeito = numDesfazer(&jogador) - countDesfeito;// calcula quantidade de desfazer totais - as que ele usou
-        int trocado = numTroca(&jogador) - countTrocado;// calcula quantidade de troca totais - as que ele usou
-
         mapa(&jogador);
         
         
@@ -728,31 +713,29 @@ int jogo(){
             else if(strcmp(instrucao, "U") == 0){ 
                 desfazerRep++; // controla se ta tentando desfazer de forma seguida
                 if(desfazerRep == 1){
-                    if(desfeito > 0){  //  se nao tiver movimentos de desfazer, ele apita um erro 
+                    if(jogador.desfazer > 0){  //  se nao tiver movimentos de desfazer, ele apita um erro 
                         anteceder(&jogador); // ele volta o movimento e a nova peça
-                        countDesfeito++; // ele aumenta o contador de quantidades de vezes q ja desfez
+                        (jogador.desfazer)--; // ele aumenta o contador de quantidades de vezes q ja desfez
                     }
                     else
-                        printf("Você não tem mais movimentos para voltar\n");
+                        printf("Você não tem movimentos para voltar\n");
                 }
                 else    
                     printf("Você não pode voltar duas vezes seguidas, favor fazer outro movimento.\n");
                 
             }
             else if(instrucao[0] == 'T'){ 
-                
-                    if(trocado > 0){ 
+                    if(jogador.troca > 0){ 
                         if(troca(&jogador, instrucao) == 1){ // comando ja sendp executado aqui
-                            printf("%s",instrucao);
-                            countTrocado++ ;
+                            
+                            (jogador.troca)-- ;
                         }else{ 
-                            printf("%s",instrucao);
+                            
                             printf("\nCorriga a sintaxe da sua esrita, ela deve obedecer exatamente ao comando!!\n");
                         }
                     }
                     else{
-                        printf("Você não tem mais movimentos para trocar\n");
-                        printf("%s",instrucao);
+                        printf("Você não tem movimentos para trocar\n");
                     }
                
                     
@@ -770,7 +753,7 @@ int jogo(){
             }
             else{
                 criarArquivo(jogador.n,copiaTab,"paraValidacao.dat"); // vai salvar a matriz q ele copiou antes do movimento, entao nao da pra usar no salvamento, pois n tem o ultimo movimento
-                jogadas++;
+                
                 novoNumero(&jogador);
                 desfazerRep =0; // como entrou em número, sabe que ele nao repetiu o desfazer
             }
