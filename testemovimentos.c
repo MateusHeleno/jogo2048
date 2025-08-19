@@ -20,7 +20,7 @@ int main(){
     inicializarTabuleiro(n,tabuleiro); // incializa com dois valores aleatórios
 
     do{
-        int **copiaTab;
+        int **copiaTab = NULL;
         int incorreto;
         int desfeito = numDesfazer(n,tabuleiro) - countDesfeito;
         int trocado = numTroca(n,tabuleiro) - countTrocado;
@@ -91,6 +91,7 @@ int main(){
             else if(strcmp(instrucao,"T POS1, POS2") == 0){ //pensando em usar sscanf
     
                     if(trocado > 0){ 
+                        troca()
                         printf("%s\n",instrucao);
                         countTrocado++;
                     }
@@ -123,3 +124,70 @@ int main(){
     }while(1); 
 }
 
+
+
+else if(strcmp(instrucao, "A") == 0){    
+                copiaTab  = copiaTabuleiro(&jogador);
+                
+                moveE(&jogador);
+                
+                movimento = 1;
+                
+            } 
+            else if(strcmp(instrucao, "D") == 0){ 
+                copiaTab  = copiaTabuleiro(&jogador);
+                
+                moveD(&jogador);
+                                
+                movimento = 1; //  indica que a opção feita foi de um movimento
+            }
+            else if(strcmp(instrucao, "W") == 0){  
+                copiaTab  = copiaTabuleiro(&jogador);
+                
+                moveC(&jogador);
+    
+                movimento = 1;
+            }
+            else if(strcmp(instrucao, "S") == 0){  
+                copiaTab  = copiaTabuleiro(&jogador);
+                
+                moveB(&jogador);
+                
+                movimento = 1;
+            }
+            else if(strcmp(instrucao, "U") == 0){ 
+                desfazerRep++; // controla se ta tentando desfazer de forma seguida
+                if(desfazerRep == 1){
+                    if(desfeito > 0){  //  se nao tiver movimentos de desfazer, ele apita um erro 
+                        anteceder(&jogador); // ele volta o movimento e a nova peça
+                        countDesfeito++; // ele aumenta o contador de quantidades de vezes q ja desfez
+                    }
+                    else
+                        printf("Você não tem mais movimentos para voltar\n");
+                }
+                else    
+                    printf("Você não pode voltar duas vezes seguidas, favor fazer outro movimento.\n");
+                
+            }
+            else if(instrucao[0] == 'T'){ 
+                
+                    if(trocado > 0){ 
+                        if(troca(&jogador, instrucao) == 1){ // comando ja sendp executado aqui
+                            printf("%s",instrucao);
+                            countTrocado++ ;
+                        }else{ 
+                            printf("%s",instrucao);
+                            printf("\nCorriga a sintaxe da sua esrita, ela deve obedecer exatamente ao comando!!\n");
+                        }
+                    }
+                    else{
+                        printf("Você não tem mais movimentos para trocar\n");
+                        printf("%s",instrucao);
+                    }
+               
+                    
+            }
+            else{    
+                printf("\nOpção inválida, por favor escolha novamente dentre os comandos apresentados\n");
+                
+            }

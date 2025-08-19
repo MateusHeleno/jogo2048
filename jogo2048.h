@@ -22,36 +22,51 @@
 #define TAB_MD  "\u252B" // ┫ (meio-direita)
 #define TAB_BD  "\u251B" // ┛ (baixo-direita)
 
+typedef struct{
+    char nome[27];
+    int pontuacao,troca,desfazer;
+    int **tabuleiro;
+    int n;
+}Jogo;
 
 
 
 void limpar_buffer(); // limpa o buffer
-void retiraN(char nome[]); // retira o \n do fgets e se necessário limpa o buffer
-void maiuscula(char nome[]); // tranforma tudo da string em maisucula nao pode ter acento
+void retiraN(char *nome); // retira o \n do fgets e se necessário limpa o buffer
+void retiraEspacos(char *nome); /// tira os espaços na string
+char tornarMaior(char c); //deixa apenas as letras minusculas em maiúsculas
+void maiuscula(char *nome); // tranforma tudo da string em maisucula nao pode ter acento
 void menuInicial(); // imprime o menu e pede a escolha
-void mapa(int n,int **tabuleiro,int pontuacao,int desfeito,int trocado,char *nome); // imprime o tabuleiro
-void ajuda(); // mostra as regras
+void comandos(); // mostra os comandos possíveis no tabuleiro
+void ajuda(); // mostra as regras 
 int sair(); // opção de sair do programa
+
 int tamanhoJogo(); // pede ao usuario que decida o tamanhro do tabuleiro
-void moveE(int n, int **tabuleiro,int *pontuacao); // move o tabuleiro para a esquerda
-void moveD(int n, int **tabuleiro,int *pontuacao); // move o tabuleiro para a direita
-void moveC(int n, int **tabuleiro,int *pontuacao); // move o tabuleiro para a cima
-void moveB(int n, int **tabuleiro,int *pontuacao); // move o tabuleiro para a baixo
-void novoNumero(int n,int **tabuleiro); // gera um numero de acordo com o tamano do tabuleiro
-void preencher0(int n,int **tabuleiro); // preenche a função com 0
+int maiorNumero(Jogo *jogador);// pega o maior número
+int quantidadeDigitos(int numero); // cálula a quantidade de digitos do maior número
+void linhaHorizontal(int n,int digitos); // faz a linha horizontal do mapa
+void mapa(Jogo *jogador); // imprime o tabuleiro
+void moveE(Jogo *jogador); // move o tabuleiro para a esquerda
+void moveD(Jogo *jogador); // move o tabuleiro para a direita
+void moveC(Jogo *jogador); // move o tabuleiro para a cima
+void moveB(Jogo *jogador); // move o tabuleiro para a baixo
+
 int **criaMatriz(int n); // cria a matriz com alocação dinâmica
 void liberaMatriz(int n,int **tabuleiro); // libera a a matriz que foi alocada
-void criarArquivo(int n,int **tabuleiro); // cria aqruivos para voltar e para salvar
-int validacaoJogada(int n,int** copiaTabuleiro,int **tabuleiro);// valida se a jogada foi válida
-int **copiaTabuleiro(int n,int **tabuleiro);//// copia um tabuleiro no outro
-void comandos(); // mostra os comandos possíveis no tabuleiro
-void anteceder(int n, int **tabuleiro); // volta uma jogada
-int mostrarPontuacao(int n, int **tabuleiro);// mostra a pontuacao do jogador
-int numDesfazer(int n,int **tabuleiro); // contabiliza a quantidade de possiveis movimentos de desfazer
-int numTroca(int n,int **tabuleiro); // contabiliza a quantidade de possiveis movimentos de troca
-void inicializarTabuleiro(int n,int **tabuleiro);
-int jogo();
-void retiraEspacos(char *nome);
-//int troca();
+void criarArquivo(int n,int **tabuleiro,char *nome); // cria aqruivos para voltar e para salvar
+
+void novoNumero(Jogo *jogador); // gera um numero de acordo com o tamano do tabuleiro
+void anteceder(Jogo *jogador); // volta uma jogada
+void preencher0(Jogo *jogador); // preenche a função com 0
+
+int validacaoJogada(Jogo *jogador,int** copiaTabuleiro);// valida se a jogada foi válida
+int **copiaTabuleiro(Jogo *jogador);//// copia um tabuleiro no outro
+
+int mostrarPontuacao(Jogo *jogador);// mostra a pontuacao do jogador
+int numDesfazer(Jogo *jogador); // contabiliza a quantidade de possiveis movimentos de desfazer
+int numTroca(Jogo *jogador); // contabiliza a quantidade de possiveis movimentos de troca
+void inicializarTabuleiro(Jogo *jogador); // função para posicionar os dois primeiros numeros no tabuleiro
+int jogo(); // funlçao que envovle toda a logica do jogo em si, como movimentos, comandos, tamnho e nome 
+int troca(Jogo *jogador,char *instrucao); // confere se a escrita está correta , e faz a mudança das posições
 
 #endif // JOGO2048_H

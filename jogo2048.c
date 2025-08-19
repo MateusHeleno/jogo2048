@@ -17,6 +17,8 @@ int main(){
         if(strlen(escolha) != 1) // se ela tiver tamanho maior que 1 ela escreve algo incorreto na posicao 1
             escolha[0] = 0;
 
+        
+
         switch(escolha[0]){
             case 'R': case 'r': 
                 if(sair() == 1){ 
@@ -26,7 +28,6 @@ int main(){
                 break;
             case 'N': case 'n':
                 jogo();
-                //jogo
                 break;
             case 'J': case 'j':
                 printf("%s\n",escolha);
@@ -38,7 +39,6 @@ int main(){
                 printf("%s\n",escolha);
                 break;
             case 'M': case 'm':
-                printf("%s\n",escolha);
                 printf("%s\n",escolha); // so para salvar os comentarios de uma vez
                 break;
             case 'A': case 'a':
