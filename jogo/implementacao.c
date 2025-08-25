@@ -113,6 +113,11 @@ int sair(){
         return 0; 
 }
 
+
+
+
+
+
 int tamanhoJogo(){
     int cont = 1;
     char c[7];
@@ -173,19 +178,12 @@ void linhaHorizontal(int n,int digitos){
 }
 
 void numeroCor(int numero) {
-    int cor = 0; // Variável para controlar o estilo
-    int calculo = numero;
-    while (calculo > 1) {
-        calculo = calculo / 2;
-        cor++;
-    }
-
-    
-    cor = ((cor - 1) % 11) + 1; // volta ele uma pra adicionar o 1 dps
+    int expoente = (int)log2(numero); 
+    expoente = ((expoente - 1) % 11) + 1; //volta ele pra garantir a primeria fila completa pois se vier com 11
+    // ia voltar pra um, materia q acessar o 11, entt volta antes do modulo e dps incrementa
     
 
-    switch(cor){ 
-       
+    switch(expoente){ 
         case (1): 
             printf(PRETO_NO_BRANCO(" %d "),numero);    
             break;
@@ -580,6 +578,16 @@ void liberaMatriz(int n,int **tabuleiro){
     free(tabuleiro);
 }
 
+void preencher0(int n, int **tabuleiro){ // coloca zero em todas as posições da matriz
+        for(int i = 0;i<n;i++){
+            for (int j = 0;j<n;j++){
+                tabuleiro[i][j] = 0;
+            }
+        }
+}
+
+
+
 void criarArquivoSalvamento(Jogo jogador,char *nome){
     FILE *saida  = fopen(nome,"w");
 
@@ -608,7 +616,6 @@ void criarArquivoSalvamento(Jogo jogador,char *nome){
     fclose(saida);
 }
 
-
 void copiaTabuleiro(Jogo *jogador){
     int n = jogador->n;
         for(int i = 0; i < n; i++) {
@@ -616,6 +623,12 @@ void copiaTabuleiro(Jogo *jogador){
                 jogador->tabuleiroAnterior[i][j] = jogador->tabuleiro[i][j];
             }
         }
+}
+
+
+void inicializarTabuleiro(Jogo *jogador){
+    novoNumero(jogador);
+    novoNumero(jogador);
 }
 
 void novoNumero(Jogo *jogador){
@@ -668,12 +681,17 @@ void anteceder(Jogo *jogador){
     }    
 }
 
-void preencher0(int n, int **tabuleiro){ // coloca zero em todas as posições da matriz
-        for(int i = 0;i<n;i++){
-            for (int j = 0;j<n;j++){
-                tabuleiro[i][j] = 0;
-            }
+int numTroca(Jogo jogador){
+    int troca = 0;
+    int n = jogador.n;
+    for(int i =0;i<n;i++){
+        for(int j = 0;j<n;j++){
+            if(jogador.tabuleiro[i][j] >=512)
+                troca += jogador.tabuleiro[i][j];
         }
+    }
+
+    return (troca / 512);
 }
 
 int validacaoJogada(Jogo *jogador){  
@@ -688,10 +706,197 @@ int validacaoJogada(Jogo *jogador){
     return 0;
 }
 
-void inicializarTabuleiro(Jogo *jogador){
-    novoNumero(jogador);
-    novoNumero(jogador);
+int troca(Jogo *jogador, char *instrucao){ // vou conferindo camada por camada
+    int x,y,numX,numY,valorReservado;
+    int n = jogador->n;
+    if(instrucao[0] == 'T' && instrucao[1] == ' ')
+    { // permie mais de um espaço entre o t e a primeira coordenada, mas garante que tem q ser no minimo 1
+        int j = 2;
+        while (instrucao[j] == ' ') {
+            j++; // Avança para a proxma letra
+        }
+        if(instrucao[j] >='A' && instrucao[j] < (('A' + n))){
+            x = (instrucao[j] - 'A' );// pois aqui temos que cair em 0 tbm, que seria a posi 1    
+            if (instrucao[j +1] >= '1' && instrucao [j +1] <= ('0' + n)){
+                numX = (instrucao[j +1] - '1'); 
+                if(instrucao[j +2] == ' '){
+                    int i = j+3;
+                    while (instrucao[i] == ' ') {
+                        i++; // Avança para a proxma letra
+                    }
+                    if(instrucao[i] >= 'A' && instrucao[i] < (('A' + n))){
+                        y = (instrucao[i] - 'A' );    
+                        if (instrucao[i+1] >= '1' && instrucao [i+1] <= ('0' + n)){
+                            numY = (instrucao[i+1] - '1'); 
+                            if (jogador->tabuleiro[x][numX] == 0 || jogador->tabuleiro[y][numY] == 0) {
+                                printf("\nMovimento de troca inválido: possível casa vazia.\n\n");
+                                return 0; // Retorna 0 para indicar que a troca falhou e não continua
+                            }
+                            else {
+                                valorReservado = jogador->tabuleiro[x][numX]; // guardar o valor
+                                jogador->tabuleiro[x][numX] = jogador->tabuleiro[y][numY];
+                                jogador->tabuleiro[y][numY] = valorReservado;                        
+                                return 1; // se retornar 1 é poorque funcionou de maneira correta
+                            }
+                        }    
+                    }         
+                }   
+            }       
+        }   
+    }    
+    return 0; // houve algum erro de escrita
 }
+
+void contarPecas(int n, int** tabuleiro, int* contagem,int tam) {
+        
+    for (int i = 0; i < tam; i++) {
+        contagem[i] = 0; 
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (tabuleiro[i][j] > 0) {
+                ///descobrindo o expoente,pra alocar nessa posicao do vetor, e ele tem q ser menor que tam, pra nao estrapolar,
+                int expoente = (int)log2(tabuleiro[i][j]);
+                contagem[expoente]++; // adicionando uma pessa nesse local do vetor
+                
+            }
+        }
+    }
+}
+
+int diferencaPontuacao(int n, int** tabuleiroAtual, int** tabuleiroAnterior) {
+    // fiz desse jeito pra dar a oporunidade de assim que ele carrergar um jogo ele poder desfazer tendo em vista
+    // q so temos o ttabulerio atual e o antigo
+    int maior = 0;
+    long long somaAtual = 0; 
+    long long somaAnterior = 0;
+
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            somaAtual += tabuleiroAtual[i][j];
+            somaAnterior += tabuleiroAnterior[i][j];
+            if (tabuleiroAtual[i][j] > maior) 
+                maior = tabuleiroAtual[i][j]; // encontrando o maior valor , nao peguei da função pra reutilizar o for
+        }
+    }
+
+    if (maior == 0) 
+        return 0;
+
+    //peguei o somatorio pra saber qual numero foi gerado
+    int pecaNova = somaAtual - somaAnterior;
+    int expoenteNovo ;
+    if (pecaNova > 0) {
+        expoenteNovo = (int)log2(pecaNova);
+    }
+
+    
+    int tam = (int)log2(maior) + 2; // descobri o expoente do maior Numero e adicionei 2 pra caber o maior numero
+    // e o após dele pra descobrir o de fundir, que teria q ser 0
+
+
+    int *contagemAtual = preencherAlocandoVetor0(tam);
+    int *contagemAnterior = preencherAlocandoVetor0(tam);
+    int *diferencaContagem = preencherAlocandoVetor0(tam);
+    int *numFusoes = preencherAlocandoVetor0(tam);
+
+    contarPecas(n, tabuleiroAtual, contagemAtual, tam);
+    contarPecas(n, tabuleiroAnterior, contagemAnterior, tam);
+
+    for (int i = 0; i < tam; i++) {
+        diferencaContagem[i] = contagemAtual[i] - contagemAnterior[i]; // fazendo a diferença de peca pra cada expoente
+    } // pode ser engativa se tiver dois, usar os dois e gerar mais 
+
+    int retirarPeca;
+    int pecasConsumidas;
+    //comeco do maior, para saber quantas peças eu usei pra fazer ele, e assim pode retirar nas proximas
+    for (int i = tam - 2; i >= 2; i--) { // vai até a peça 4 (i=2)
+        pecasConsumidas = 2 * numFusoes[i + 1]; // pecas consumidas pra fazer o proximo,primeiro caso sempre vai ser, e multiplica por 2,pq els jutam
+        if(i == expoenteNovo){  // pra saber se foi gerado ou nao
+            retirarPeca =  1 ;
+        }
+        else 
+             retirarPeca =  0;
+        
+        numFusoes[i] = diferencaContagem[i] + pecasConsumidas - retirarPeca; 
+        // a diferença (da diferenca (entre o q tinha antes e agora)) - o q gastou pra fazer a proxima
+    }
+
+
+    int pontuacaoDaJogada = 0;
+    for (int i = 2; i < tam; i++) {
+        if (numFusoes[i] > 0) {
+            int valorDaPeca = (int)pow(2, i); // descovre o valor original dela 
+            pontuacaoDaJogada += numFusoes[i] * valorDaPeca; // multiplica pela quantidade de vezes q foi feita
+        }
+    }
+
+    free(contagemAtual);
+    free(contagemAnterior);
+    free(diferencaContagem);
+    free(numFusoes);
+
+    return pontuacaoDaJogada;
+}
+
+int* preencherAlocandoVetor0(int tam){
+    int *vet;
+    vet = (int*)malloc(tam * sizeof(int));
+    for (int i = 0; i < tam; i++) {
+        vet[i] = 0;
+    }
+    return vet;
+}
+
+
+
+int vitoria(Jogo jogador){
+  for (int i = 0; i <jogador.n; i++) {
+        for (int j = 0; j < jogador.n; j++) {
+            if(jogador.tabuleiro[i][j] == 2048)
+                return 1;            
+        }
+    } 
+    return 0; 
+}
+
+int derrota(Jogo jogador){
+    int n = jogador.n;
+    int **tabuleiro = jogador.tabuleiro;
+
+        // confere se tem casa vaziaf
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (tabuleiro[i][j] == 0) {
+                return 0; // Jogo pode continuar, retorna falso.
+            }
+        }
+    }
+    // confere se tem peças iguais pros lados
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n - 1; j++) { 
+            if (tabuleiro[i][j] == tabuleiro[i][j + 1]) {
+                return 0;
+            }
+        }
+    }
+
+    // confere se tem peças iguais em relaçãoa verticcal
+    for (int i = 0; i < n - 1; i++) { 
+        for (int j = 0; j < n; j++) {
+            if (tabuleiro[i][j] == tabuleiro[i + 1][j]) {
+                return 0;
+            }
+        }
+    }
+
+    
+    return 1; 
+}
+
+
 
 int novoJogo(){ 
     Jogo jogador;
@@ -712,14 +917,10 @@ int novoJogo(){
     retiraN(nome);
     strcpy(jogador.nome, nome); 
 
-    
     preencher0(jogador.n,jogador.tabuleiro);// preenche a matriz com 0 para imprimir espaço
     preencher0(jogador.n,jogador.tabuleiroAnterior);
     inicializarTabuleiro(&jogador);// incializa com dois valores aleatórios
-   
-    
 
-    
     executarJogo(&jogador); 
 
     return 0;
@@ -779,12 +980,11 @@ int executarJogo(Jogo *jogador){
                     if(jogador->desfazer > 0){ 
                         
                         int pontuacaoDaJogadaAnterior = diferencaPontuacao(jogador->n, jogador->tabuleiro, jogador->tabuleiroAnterior);
+                        // para de existir aqui msm
+                        anteceder(jogador); 
 
-                        anteceder(jogador);            
                         jogador->pontuacao -= pontuacaoDaJogadaAnterior;
                         jogador->desfazer--;
-
-    
                     }
                     else
                         printf("Você não tem movimentos para voltar\n");
@@ -854,105 +1054,6 @@ int executarJogo(Jogo *jogador){
     return 0;
 } 
 
-int troca(Jogo *jogador, char *instrucao){ // vou conferindo camada por camada
-    int x,y,numX,numY,valorReservado;
-    int n = jogador->n;
-    if(instrucao[0] == 'T' && instrucao[1] == ' ')
-    { // fazer igual la em baixo
-        int j = 2;
-        while (instrucao[j] == ' ') {
-            j++; // Avança para a proxma letra
-        }
-        if(instrucao[j] >='A' && instrucao[j] < (('A' + n))){
-            x = (instrucao[j] - 'A' );// pois aqui temos que cair em 0 tbm, que seria a posi 1    
-            if (instrucao[j +1] >= '1' && instrucao [j +1] <= ('0' + n)){
-                numX = (instrucao[j +1] - '1'); 
-                if(instrucao[j +2] == ' '){
-                    int i = j+3;
-                    while (instrucao[i] == ' ') {
-                        i++; // Avança para a proxma letra
-                    }
-                    if(instrucao[i] >= 'A' && instrucao[i] < (('A' + n))){
-                        y = (instrucao[i] - 'A' );    
-                        if (instrucao[i+1] >= '1' && instrucao [i+1] <= ('0' + n)){
-                            numY = (instrucao[i+1] - '1'); 
-                            if (jogador->tabuleiro[x][numX] == 0 || jogador->tabuleiro[y][numY] == 0) {
-                                printf("\nMovimento de troca inválido: possível casa vazia.\n\n");
-                                return 0; // Retorna 0 para indicar que a troca falhou e não continua
-                            }
-                            else {
-                                valorReservado = jogador->tabuleiro[x][numX]; // guardar o valor
-                                jogador->tabuleiro[x][numX] = jogador->tabuleiro[y][numY];
-                                jogador->tabuleiro[y][numY] = valorReservado;                        
-                                return 1; // se retornar 1 é poorque funcionou de maneira correta
-                            }
-                        }    
-                    }         
-                }   
-            }       
-        }   
-    }    
-    return 0; // houve algum erro de escrita
-}
-
-int vitoria(Jogo jogador){
-  for (int i = 0; i <jogador.n; i++) {
-        for (int j = 0; j < jogador.n; j++) {
-            if(jogador.tabuleiro[i][j] == 2048)
-                return 1;            
-        }
-    } 
-    return 0; 
-}
-
-int derrota(Jogo jogador){
-    int n = jogador.n;
-    int **tabuleiro = jogador.tabuleiro;
-
-        // confere se tem casa vaziaf
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (tabuleiro[i][j] == 0) {
-                return 0; // Jogo pode continuar, retorna falso.
-            }
-        }
-    }
-    // confere se tem peças iguais pros lados
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n - 1; j++) { 
-            if (tabuleiro[i][j] == tabuleiro[i][j + 1]) {
-                return 0;
-            }
-        }
-    }
-
-    // confere se tem peças iguais pros lados
-    for (int i = 0; i < n - 1; i++) { 
-        for (int j = 0; j < n; j++) {
-            if (tabuleiro[i][j] == tabuleiro[i + 1][j]) {
-                return 0;
-            }
-        }
-    }
-
-    
-    return 1; 
-}
-
-
-int numTroca(Jogo jogador){
-    int troca = 0;
-    int n = jogador.n;
-    for(int i =0;i<n;i++){
-        for(int j = 0;j<n;j++){
-            if(jogador.tabuleiro[i][j] >=512)
-                troca += jogador.tabuleiro[i][j];
-        }
-    }
-
-    return (troca / 512);
-}
-
 void salvarJogo(){
     char nome[20];
     Jogo jogador;
@@ -961,8 +1062,52 @@ void salvarJogo(){
     limpar_buffer();
 
     copiarArquivoSalvamento(&jogador, nome);
-   
     
+}
+
+void copiarArquivoSalvamento(Jogo *jogador, char *nome) {
+    FILE *entrada = fopen("paraSalvamento.txt", "r");
+    FILE *destino = fopen(nome, "w");
+    char lixo;
+    
+    if (destino == NULL) {
+        printf("Erro: Não foi possível criar o arquivo de destino '%s'\n", nome);
+        fclose(entrada);
+        return;
+    }
+    
+    fscanf(entrada, "%d%c%d%c%d%c", &jogador->n,&lixo, &jogador->desfazer,&lixo, &jogador->troca,&lixo);
+    fscanf(entrada, "%d%c", &jogador->pontuacao,&lixo);
+    fgets(jogador->nome,27,entrada);
+    retiraN(jogador->nome);
+
+    jogador->tabuleiro = criaMatriz(jogador->n);
+    jogador->tabuleiroAnterior = criaMatriz(jogador->n);
+    
+    for (int i = 0; i < jogador->n; i++) {
+        for (int j = 0; j < jogador->n; j++) {
+            fscanf(entrada, "%d", &jogador->tabuleiro[i][j]);
+        }
+    }
+
+    fscanf(entrada,"%c",&lixo);
+
+    for (int i = 0; i < jogador->n; i++) {
+        for (int j = 0; j < jogador->n; j++) {
+            fscanf(entrada, "%d", &jogador->tabuleiroAnterior[i][j]); 
+        }
+    }
+
+        // até aqui eu to pegando os dados do arquivo 
+    fclose(destino);
+    fclose(entrada);
+
+    criarArquivoSalvamento(*jogador,nome); // aqui eu passo pra outro
+    atualizarRanking(jogador); // atualizo o ranking
+
+    liberaMatriz(jogador->n,jogador->tabuleiroAnterior); 
+    liberaMatriz(jogador->n, jogador->tabuleiro);
+
 }
 
 int carregarJogo(Jogo *jogador, char *nomeArquivo) {
@@ -1026,107 +1171,13 @@ void carregarJogoPronto(){
     
 }
 
-void contarPecas(int n, int** tabuleiro, int* contagem,int tam) {
-        
-    for (int i = 0; i < tam; i++) {
-        contagem[i] = 0; 
-    }
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (tabuleiro[i][j] > 0) {
-                ///descobrindo o expoente,pra alocar nessa posicao do vetor, e ele tem q ser menor que tam, pra nao estrapolar,
-                int expoente = (int)log2(tabuleiro[i][j]);
-                if (expoente < tam) {
-                    contagem[expoente]++;
-                }
-            }
-        }
-    }
-}
-
-int diferencaPontuacao(int n, int** tabuleiroAtual, int** tabuleiroAnterior) {
-    int maior = 0;
-    long long somaAtual = 0; 
-    long long somaAnterior = 0;
-
-    
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            somaAtual += tabuleiroAtual[i][j];
-            somaAnterior += tabuleiroAnterior[i][j];
-            if (tabuleiroAtual[i][j] > maior) 
-                maior = tabuleiroAtual[i][j]; // encontrando o maior valor , nao peguei da função pra reutilizar o for
-        }
-    }
-
-    if (maior == 0) 
-        return 0;
-
-    //peguei o somatorio pra saber qual numero foi gerado
-    int pecaNova = somaAtual - somaAnterior;
-    int expoenteNovo ;
-    if (pecaNova > 0) {
-        expoenteNovo = (int)log2(pecaNova);
-    }
-
-    
-    int tam = (int)log2(maior) + 2; // descobri o expoente do maior Numero
 
 
-    int *contagemAtual = preencherAlocandoVetor0(tam);
-    int *contagemAnterior = preencherAlocandoVetor0(tam);
-    int *diferencaContagem = preencherAlocandoVetor0(tam);
-    int *numFusoes = preencherAlocandoVetor0(tam);
-
-    contarPecas(n, tabuleiroAtual, contagemAtual, tam);
-    contarPecas(n, tabuleiroAnterior, contagemAnterior, tam);
-
-    for (int i = 0; i < tam; i++) {
-        diferencaContagem[i] = contagemAtual[i] - contagemAnterior[i]; // fazendo a diferença de peca pra cada expoente
-    } // pode ser engativa se tiver dois, usar os dois e gerar mais 
-
-    int retirarPeca;
-    int pecasConsumidas;
-    //comeco do maior, para saber quantas peças eu usei pra fazer ele, e assim pode retirar nas proximas
-    for (int i = tam - 2; i >= 2; i--) { // vai até a peça 4 (i=2)
-        pecasConsumidas = 2 * numFusoes[i + 1]; // pecas consumidas pra fazer o proximo,primeiro caso sempre vai ser 0
-        if(i == expoenteNovo){  // pra saber se foi gerado ou nao
-            retirarPeca =  1 ;
-        }
-        else 
-             retirarPeca =  0;
-        
-        numFusoes[i] = diferencaContagem[i] + pecasConsumidas - retirarPeca; // 
-    }
 
 
-    int pontuacaoDaJogada = 0;
-    for (int i = 2; i < tam; i++) {
-        if (numFusoes[i] > 0) {
-            int valorDaPeca = (int)pow(2, i); // descovre o valor original dela 
-            pontuacaoDaJogada += numFusoes[i] * valorDaPeca; // multiplica pela quantidade de vezes q foi feita
-        }
-    }
 
-    free(contagemAtual);
-    free(contagemAnterior);
-    free(diferencaContagem);
-    free(numFusoes);
-
-    return pontuacaoDaJogada;
-}
-
-int* preencherAlocandoVetor0(int tam){
-    int *vet;
-    vet = (int*)malloc(tam * sizeof(int));
-    for (int i = 0; i < tam; i++) {
-        vet[i] = 0;
-    }
-    return vet;
-}
 void carregarRanking(Ranking rankingsPorTamanho[3][10], int numeroDeEntradasPorTamanho[3]){
-    FILE *arquivo = fopen("ranking.dat", "r");
+    FILE *arquivo = fopen("ranking.dat", "rb"); // esta mandando as informações do arquivo para o vetor para printar
     if (arquivo == NULL) {
         
         for (int i = 0; i < 3; i++) {
@@ -1135,59 +1186,60 @@ void carregarRanking(Ranking rankingsPorTamanho[3][10], int numeroDeEntradasPorT
         return;
     }
 
-    // Lê a quantidade de scores salvos para cada tamanho de tabuleiro
-    fscanf(arquivo, "%d %d %d", &numeroDeEntradasPorTamanho[0], &numeroDeEntradasPorTamanho[1], &numeroDeEntradasPorTamanho[2]);
+    //pega a quantidade de cada tamanho
+    fread(numeroDeEntradasPorTamanho, sizeof(int), 3, arquivo);
 
-    // Lê os dados de cada ranking (4x4, 5x5, 6x6)
+    // Escreve os dados de cada ranking
     for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < numeroDeEntradasPorTamanho[i]; j++) {
-            fscanf(arquivo, "%s %d", rankingsPorTamanho[i][j].nome, &rankingsPorTamanho[i][j].pontuacao);
+        // Escreve todas as entradas de um ranking específico de uma vez
+        if (numeroDeEntradasPorTamanho[i] > 0) {
+            fread(rankingsPorTamanho[i], sizeof(Ranking), numeroDeEntradasPorTamanho[i], arquivo);
         }
     }
+
 
     fclose(arquivo);
 }
 
-// Salva os rankings no arquivo "ranking.dat"
+
 void salvarRanking(Ranking rankingsPorTamanho[3][10], int numeroDeEntradasPorTamanho[3]) {
-    FILE *arquivo = fopen("ranking.dat", "w");
+    FILE *arquivo = fopen("ranking.dat", "wb");
     if (arquivo == NULL) {
         printf("Erro ao salvar o ranking!\n");
         return;
     }
 
-    // Escreve a quantidade de scores para cada tamanho
-    fprintf(arquivo, "%d %d %d\n", numeroDeEntradasPorTamanho[0], numeroDeEntradasPorTamanho[1], numeroDeEntradasPorTamanho[2]);
-
+    // Escreve a quantidade de pontuacao salva para cada tamanho
+    fwrite(numeroDeEntradasPorTamanho, sizeof(int), 3, arquivo);
+    
     // Escreve os dados de cada ranking
     for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < numeroDeEntradasPorTamanho[i]; j++) {
-            fprintf(arquivo, "%s %d\n", rankingsPorTamanho[i][j].nome, rankingsPorTamanho[i][j].pontuacao);
-        }
+        fwrite(rankingsPorTamanho[i], sizeof(Ranking), numeroDeEntradasPorTamanho[i], arquivo);
     }
+    
 
     fclose(arquivo);
 }
 
-// Atualiza o ranking com a pontuação do jogo finalizado
+
 void atualizarRanking(Jogo *jogador) {
     if (jogador->pontuacao == 0) 
-        return; // Não salva jogos com pontuação zero
+        return; // pontuação 0 nao salva
 
     Ranking rankingsPorTamanho[3][10];
     int numeroDeEntradasPorTamanho[3];
     carregarRanking(rankingsPorTamanho, numeroDeEntradasPorTamanho);
 
-    // Converte o tamanho do tabuleiro (4, 5, 6) para um índice de vetor (0, 1, 2)
+    // muda rpa indice de vetor
     int indiceDoRanking = jogador->n - 4;
 
-    // Pega a menor pontuação no ranking se ele estiver cheio (10 entradas)
+    
     int menorPontuacaoNoRanking = 0;
-    if (numeroDeEntradasPorTamanho[indiceDoRanking] == 10) {
+    if (numeroDeEntradasPorTamanho[indiceDoRanking] == 10) { // se tiver todas pega a ultima q é a menor
         menorPontuacaoNoRanking = rankingsPorTamanho[indiceDoRanking][9].pontuacao;
     }
 
-    // Verifica se a pontuação do jogador é alta o suficiente para entrar no ranking
+    // Verifica se a pontuação do jogador é suficiente para entrar no ranking
     if (numeroDeEntradasPorTamanho[indiceDoRanking] < 10 || jogador->pontuacao > menorPontuacaoNoRanking) {
         Ranking novaEntradaDoRanking;
         strcpy(novaEntradaDoRanking.nome, jogador->nome);
@@ -1195,35 +1247,32 @@ void atualizarRanking(Jogo *jogador) {
 
         // Adiciona a nova pontuação na lista
         if (numeroDeEntradasPorTamanho[indiceDoRanking] < 10) {
-            // Se a lista não está cheia, adiciona no final e incrementa o contador
+            // Se a lista não está cheia adiciona no final 
             rankingsPorTamanho[indiceDoRanking][numeroDeEntradasPorTamanho[indiceDoRanking]] = novaEntradaDoRanking;
             numeroDeEntradasPorTamanho[indiceDoRanking]++;
         } else {
-            // Se a lista está cheia, substitui a última (e menor) pontuação
+            // Se a lista está cheia, substitui a última  pontuação
             rankingsPorTamanho[indiceDoRanking][9] = novaEntradaDoRanking;
         }
 
-        // --- ORDENAÇÃO MANUAL (Bubble Sort em ordem decrescente) ---
         int numeroDeEntradasAtual = numeroDeEntradasPorTamanho[indiceDoRanking];
         for (int i = 0; i < numeroDeEntradasAtual - 1; i++) {
             for (int j = 0; j < numeroDeEntradasAtual - i - 1; j++) {
                 if (rankingsPorTamanho[indiceDoRanking][j].pontuacao < rankingsPorTamanho[indiceDoRanking][j + 1].pontuacao) {
                     // Troca as posições se o elemento atual for menor que o próximo
-                    Ranking entradaTemporaria = rankingsPorTamanho[indiceDoRanking][j];
+                    Ranking entradaTemporaria = rankingsPorTamanho[indiceDoRanking][j]; // guarda o valor
                     rankingsPorTamanho[indiceDoRanking][j] = rankingsPorTamanho[indiceDoRanking][j + 1];
                     rankingsPorTamanho[indiceDoRanking][j + 1] = entradaTemporaria;
                 }
             }
         }
-        // --- FIM DA ORDENAÇÃO ---
-
         printf("\nParabéns! Você entrou no ranking!\n");
         salvarRanking(rankingsPorTamanho, numeroDeEntradasPorTamanho);
     }
 }
 
-// Mostra o ranking para o usuário
-void mostrarRanking() {
+
+void mostrarRanking() { // printar ranking
     Ranking rankingsPorTamanho[3][10];
     int numeroDeEntradasPorTamanho[3];
     carregarRanking(rankingsPorTamanho, numeroDeEntradasPorTamanho);
@@ -1249,7 +1298,7 @@ void mostrarRanking() {
         if (strlen(tamanho) == 1 && (tamanho[0] >= '4' && tamanho[0] <= '6')) {
             tamanhoDoRankingEscolhido = tamanho[0] - '0';
         } else {
-            tamanhoDoRankingEscolhido = 0; // Marca a escolha como inválida para repetir o loop
+            tamanhoDoRankingEscolhido = 0; 
         }
         
         if (tamanhoDoRankingEscolhido == 0) {
@@ -1270,53 +1319,10 @@ void mostrarRanking() {
             printf("%-4d | %-26s | %d\n", i + 1, rankingsPorTamanho[indiceDoRankingEscolhido][i].nome, rankingsPorTamanho[indiceDoRankingEscolhido][i].pontuacao);
         }
     }
-    printf("===============================\n");
+    printf("=====================================================\n");
     
     printf("\nPressione qualquer tecla para voltar ao menu: ");
     char saida[3];
     fgets(saida,3,stdin);
 }
 
-void copiarArquivoSalvamento(Jogo *jogador, char *nome) {
-    FILE *entrada = fopen("paraSalvamento.txt", "r");
-    FILE *destino = fopen(nome, "w");
-    char lixo;
-    
-    if (destino == NULL) {
-        printf("Erro: Não foi possível criar o arquivo de destino '%s'\n", nome);
-        fclose(entrada);
-        return;
-    }
-    
-    fscanf(entrada, "%d%c%d%c%d%c", &jogador->n,&lixo, &jogador->desfazer,&lixo, &jogador->troca,&lixo);
-    fscanf(entrada, "%d%c", &jogador->pontuacao,&lixo);
-    fgets(jogador->nome,27,entrada);
-    retiraN(jogador->nome);
-
-    jogador->tabuleiro = criaMatriz(jogador->n);
-    jogador->tabuleiroAnterior = criaMatriz(jogador->n);
-    
-    for (int i = 0; i < jogador->n; i++) {
-        for (int j = 0; j < jogador->n; j++) {
-            fscanf(entrada, "%d", &jogador->tabuleiro[i][j]);
-        }
-    }
-
-    fscanf(entrada,"%c",&lixo);
-
-    for (int i = 0; i < jogador->n; i++) {
-        for (int j = 0; j < jogador->n; j++) {
-            fscanf(entrada, "%d", &jogador->tabuleiroAnterior[i][j]);
-        }
-    }
-
-    fclose(destino);
-    fclose(entrada);
-
-    criarArquivoSalvamento(*jogador,nome);
-    atualizarRanking(jogador);
-
-    liberaMatriz(jogador->n,jogador->tabuleiroAnterior); 
-    liberaMatriz(jogador->n, jogador->tabuleiro);
-
-}

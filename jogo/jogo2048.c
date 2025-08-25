@@ -36,8 +36,7 @@ int main(){
                     carregarJogoAtual();
                 else
                     printf("\nVocê nao tem nenhum jogo iniciado para continuar\n");
-                
-                    
+                   
                 break;
             case 'C': case 'c':
                 carregarJogoPronto();
