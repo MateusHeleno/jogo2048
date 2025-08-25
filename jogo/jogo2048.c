@@ -7,13 +7,14 @@ int main(){
     
     char escolha[7]; // escolha no menu
     
+    int jogoIniciado = 0;
     while(1){ 
         menuInicial(); // começando o programa com o menu e pedindo a escolha
         fgets(escolha,7,stdin);
         retiraN(escolha);
         retiraEspacos(escolha);
         maiuscula(escolha);
-
+        
         if(strlen(escolha) != 1) // se ela tiver tamanho maior que 1 ela escreve algo incorreto na posicao 1
             escolha[0] = 0;
 
@@ -27,19 +28,28 @@ int main(){
                 }                
                 break;
             case 'N': case 'n':
-                jogo();
+                novoJogo();
+                jogoIniciado = 1;
                 break;
             case 'J': case 'j':
-                printf("%s\n",escolha);
+                if(jogoIniciado)
+                    carregarJogoAtual();
+                else
+                    printf("\nVocê nao tem nenhum jogo iniciado para continuar\n");
+                
+                    
                 break;
             case 'C': case 'c':
-                printf("%s\n",escolha);
+                carregarJogoPronto();
                 break;
             case 'S': case 's':
-                printf("%s\n",escolha);
+                if(jogoIniciado)
+                    salvarJogo();
+                else
+                    printf("\nVocê nao tem nenhum jogo iniciado para salvar\n");
                 break;
             case 'M': case 'm':
-                printf("%s\n",escolha); // so para salvar os comentarios de uma vez
+                mostrarRanking();
                 break;
             case 'A': case 'a':
                 ajuda();
