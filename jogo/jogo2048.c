@@ -1,7 +1,7 @@
 /* Mateus Oliveira Heleno
    25.1.4007 */
 
-#include "jogo2048.h"
+#include "implementacao.h"
 
 int main(){
     
@@ -17,8 +17,6 @@ int main(){
         
         if(strlen(escolha) != 1) // se ela tiver tamanho maior que 1 ela escreve algo incorreto na posicao 1
             escolha[0] = 0;
-
-        
 
         switch(escolha[0]){
             case 'R': case 'r': 
@@ -39,7 +37,8 @@ int main(){
                    
                 break;
             case 'C': case 'c':
-                carregarJogoPronto();
+                carregarJogoPronto(&jogoIniciado);
+
                 break;
             case 'S': case 's':
                 if(jogoIniciado)

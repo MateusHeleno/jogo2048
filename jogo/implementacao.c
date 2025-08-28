@@ -2,7 +2,7 @@
    25.1.4007 */
 
 
-#include "jogo2048.h"
+#include "implementacao.h"
 
 
 void limpar_buffer()
@@ -364,10 +364,11 @@ void moveE(Jogo *jogador){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i][j+1] = 0;     // Zera o segundo bloco
                 jogador->pontuacao += tabuleiro[i][j];
-                j++;
-
+                
                 if(tabuleiro[i][j] == 256)
                     (jogador->desfazer)++; 
+                
+                j++;
             
             }   
         }
@@ -420,10 +421,11 @@ void moveD(Jogo *jogador){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i][j-1] = 0;     // Zera o segundo bloco
                 jogador->pontuacao += tabuleiro[i][j] ;           
-                j--;
-                
+             
                 if(tabuleiro[i][j] == 256)
                     (jogador->desfazer)++; 
+
+                j--;
             
             }
 
@@ -478,11 +480,11 @@ void moveC(Jogo *jogador){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i+1][j] = 0;     // Zera o segundo bloco
                 jogador->pontuacao += tabuleiro[i][j] ;
-                i++;
-
+               
                 if(tabuleiro[i][j] == 256)
                     (jogador->desfazer)++; 
                 
+                i++;
             
             }
         }
@@ -533,10 +535,12 @@ void moveB(Jogo *jogador){
                 tabuleiro[i][j] = tabuleiro[i][j] * 2;      // Dobra o valor do primeiro bloco
                 tabuleiro[i-1][j] = 0;     // Zera o segundo bloco
                 jogador->pontuacao += tabuleiro[i][j];
-                i--;
+                
 
                 if(tabuleiro[i][j] == 256)
                     (jogador->desfazer)++; 
+
+                i--;
             }
         }
     }
@@ -1033,7 +1037,8 @@ int executarJogo(Jogo *jogador){
 
         if(vitoria(*jogador) && ganhou == 0){ 
             ganhou++;
-            printf("Parabéns !! Você venceu, deseja continuar ?\n ");
+            mapa(jogador);
+            printf("Parabéns !! Você venceu, deseja continuar ?\n");
             printf("Digite 'S' para continuar o jogo, ou outra coisa para sair\nEscolha: ");
             fgets(jogar,7,stdin);
             retiraEspacos(jogar);
@@ -1151,14 +1156,15 @@ void carregarJogoAtual(){
     Jogo jogador;
 
 
-    if(carregarJogo(&jogador,"paraSalvamento.txt"))
+    if(carregarJogo(&jogador,"paraSalvamento.txt")){ 
         executarJogo(&jogador);
+    }
     else
         printf("Falhar na execução do programa, pedimos mil desculpas e estamos consertando isso.");
     
 }
 
-void carregarJogoPronto(){
+void carregarJogoPronto(int *jogoIniciado){
     Jogo jogador;
 
     char nome[20];
@@ -1166,8 +1172,11 @@ void carregarJogoPronto(){
     scanf("%s",nome);
     limpar_buffer();
 
-    if(carregarJogo(&jogador,nome))
+    if(carregarJogo(&jogador,nome)){
+        criarArquivoSalvamento(jogador,"paraSalvamento.txt");
+        (*jogoIniciado) = 1;
         executarJogo(&jogador);
+    }
     
 }
 
